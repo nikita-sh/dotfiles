@@ -28,18 +28,15 @@
     # /home/nikita/dev/vital-nix/system/office-vpn.nix
   ];
 
-  office-vpn = {
-    address = "192.168.5.98/32";
-    privateKeyFile = /home/nikita/.office-vpn/private.key;
-  };
+#   office-vpn = {
+#     address = "192.168.5.98/32";
+#     privateKeyFile = /home/nikita/.office-vpn/private.key;
+#   };
 
   nixpkgs = {
     # You can add overlays here
     overlays = [
       # Add overlays your own flake exports (from overlays and pkgs dir):
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
 
       # You can also add overlays exported from other flakes:
       # neovim-nightly-overlay.overlays.default
@@ -151,10 +148,13 @@
   # Feel free to remove if you don't need it.
   services.openssh = {
     enable = true;
-    # Forbid root login through SSH.
-    permitRootLogin = "no";
-    # Use keys only. Remove if you want to SSH using password (not recommended)
-    passwordAuthentication = false;
+    
+    settings = {
+        # Forbid root login through SSH.
+        PermitRootLogin = "no";
+         # Use keys only. Remove if you want to SSH using password (not recommended)
+        PasswordAuthentication = false;
+    };
   };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion

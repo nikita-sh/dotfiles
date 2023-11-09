@@ -24,9 +24,9 @@
     # You can add overlays here
     overlays = [
       # Add overlays your own flake exports (from overlays and pkgs dir):
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
+    #   outputs.overlays.additions
+    #   outputs.overlays.modifications
+    #   outputs.overlays.unstable-packages
 
       # You can also add overlays exported from other flakes:
       # neovim-nightly-overlay.overlays.default
@@ -63,8 +63,6 @@
         fd
         file
         firefox
-        fzf
-        glibc.dev
         gnumake
         glow
         helix
@@ -74,7 +72,6 @@
         iperf3
         keychain
         linuxHeaders
-        man-pages
         nmap 
         openssh
         openssl
@@ -96,7 +93,7 @@
         vscode
         xxd
         zip
-    ]
+    ];
   };
 
   # Add stuff for your user as you see fit:
@@ -106,7 +103,6 @@
   # Enable home-manager and git
   programs = {
     home-manager.enable = true;
-    git.enable = true;
 
     direnv = {
       enable = true;
@@ -118,19 +114,19 @@
         enable = true;
         userName = "Nikita Shumeiko";
         extraConfig = {
-        core.editor = "$EDITOR";
-        core.pager = "${pkgs.delta}/bin/delta";
-        interactive.diffFilter = "${pkgs.delta}/bin/delta --color-only";
-        add.interactive.useBuiltin = false;
-        include.path = "${builtins.fetchurl "https://raw.githubusercontent.com/dandavison/delta/4c879ac1afca68a30c9a100bea2965b858eb1853/themes.gitconfig"}";
-        delta = {
-            features = "chameleon";
-            side-by-side = false;
-            navigate = true;
-            light = false;
-        };
-        merge.conflictstyle = "diff3";
-        diff.colorMoved = "default";
+            core.editor = "$EDITOR";
+            core.pager = "${pkgs.delta}/bin/delta";
+            interactive.diffFilter = "${pkgs.delta}/bin/delta --color-only";
+            add.interactive.useBuiltin = false;
+            include.path = "${builtins.fetchurl "https://raw.githubusercontent.com/dandavison/delta/4c879ac1afca68a30c9a100bea2965b858eb1853/themes.gitconfig"}";
+            delta = {
+                features = "chameleon";
+                side-by-side = false;
+                navigate = true;
+                light = false;
+            };
+            merge.conflictstyle = "diff3";
+            diff.colorMoved = "default";
         };
     };
 
