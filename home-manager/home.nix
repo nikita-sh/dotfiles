@@ -135,7 +135,7 @@
 
     zsh = {
       enable = true;
-      defaultKeymap = "nvim";
+      defaultKeymap = "vicmd";
       shellAliases = {
         g = "git";
       };
