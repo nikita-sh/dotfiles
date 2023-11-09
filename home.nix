@@ -5,6 +5,7 @@
   # manage.
   home.username = "nikita";
   home.homeDirectory = "/home/nikita";
+  
 
   nix = {
     package = pkgs.nix;
@@ -71,7 +72,6 @@
     # feel free to add your own or remove some of them
 
     firefox
-    slack
     vscode
     spotify
     git
@@ -89,7 +89,6 @@
     ripgrep # recursively searches directories for a regex pattern
     jq # A lightweight and flexible command-line JSON processor
     yq-go # yaml processer https://github.com/mikefarah/yq
-    exa # A modern replacement for ‘ls’
     fzf # A command-line fuzzy finder
 
     # networking tools
