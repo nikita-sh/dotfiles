@@ -118,7 +118,6 @@
             core.pager = "${pkgs.delta}/bin/delta";
             interactive.diffFilter = "${pkgs.delta}/bin/delta --color-only";
             add.interactive.useBuiltin = false;
-            include.path = "${builtins.fetchurl "https://raw.githubusercontent.com/dandavison/delta/4c879ac1afca68a30c9a100bea2965b858eb1853/themes.gitconfig"}";
             delta = {
                 features = "chameleon";
                 side-by-side = false;
