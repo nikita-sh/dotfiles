@@ -118,6 +118,7 @@
             pr = "pull --rebase";
             psh = "push";
             c = "commit";
+            ca = "commit --amend";
             s = "status";
             st = "stash";
             pfwl = "push --force-with-lease";
