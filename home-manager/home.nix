@@ -113,6 +113,24 @@
         package = pkgs.git;
         enable = true;
         userName = "Nikita Shumeiko";
+        aliases = {
+            p = "pull";
+            pr = "pull --rebase";
+            psh = "push";
+            c = "commit";
+            s = "status";
+            st = "stash";
+            pfwl = "push --force-with-lease";
+            co = "checkout";
+            r = "rebase";
+            rbi = "rebase -i";
+            a = "add";
+            sp = "stash pop";
+            cp = "cherry-pick";
+            l = "log";
+            d = "diff";
+            rl = "reflog";
+        };
         extraConfig = {
             core.editor = "$EDITOR";
             core.pager = "${pkgs.delta}/bin/delta";
@@ -146,6 +164,9 @@
       };
     };
   };
+
+  home.file.".zshrc".source = ../dot/dot-zshrc;
+  home.file.".p10k.zsh".source = ../dot/dot-p10k.zsh;
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
