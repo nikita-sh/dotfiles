@@ -117,7 +117,7 @@
             p = "pull";
             pr = "pull --rebase";
             psh = "push";
-            c = "commit";
+            ci = "commit";
             ca = "commit --amend";
             s = "status";
             st = "stash";
@@ -131,6 +131,7 @@
             l = "log";
             d = "diff";
             rl = "reflog";
+            m = "merge"
         };
         extraConfig = {
             core.editor = "$EDITOR";

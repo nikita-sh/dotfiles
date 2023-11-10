@@ -75,7 +75,12 @@
   # FIXME: Add the rest of your current configuration
 
   # TODO: Set your hostname
-  networking.hostName = "nixos";
+  networking = {
+    hostName = "nixos";
+    wireless = {
+        enable = true;
+    };
+  };
 
   # TODO: This is just an example, be sure to use whatever bootloader you prefer
   boot.loader.systemd-boot.enable = true;
@@ -98,6 +103,8 @@
     layout = "us";
     xkbVariant = "";
   };
+
+
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
