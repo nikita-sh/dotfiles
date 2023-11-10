@@ -80,6 +80,9 @@
     wireless = {
         enable = true;
     };
+    networkmanager = {
+	enable = true;
+    };
   };
 
   # TODO: This is just an example, be sure to use whatever bootloader you prefer
@@ -103,8 +106,6 @@
     layout = "us";
     xkbVariant = "";
   };
-
-
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
