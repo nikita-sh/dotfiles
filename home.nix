@@ -86,6 +86,7 @@
         rsync
         screen
         spotify
+        slack
         stdenv.cc
         strace
         terraform
@@ -119,6 +120,7 @@
             psh = "push";
             ci = "commit";
             ca = "commit --amend";
+            cim = "commit -m";
             s = "status";
             st = "stash";
             pfwl = "push --force-with-lease";
@@ -167,8 +169,8 @@
     };
   };
 
-  home.file.".zshrc".source = ../dot/dot-zshrc;
-  home.file.".p10k.zsh".source = ../dot/dot-p10k.zsh;
+  home.file.".zshrc".source = ./dot/dot-zshrc;
+  home.file.".p10k.zsh".source = ./dot/dot-p10k.zsh;
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
