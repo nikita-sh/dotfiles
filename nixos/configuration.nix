@@ -77,9 +77,6 @@
   # TODO: Set your hostname
   networking = {
     hostName = "nixos";
-    wireless = {
-        enable = true;
-    };
     networkmanager = {
 	enable = true;
     };
