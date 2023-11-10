@@ -3,6 +3,7 @@
 {
   inputs,
   outputs,
+  unstable,
   lib,
   config,
   pkgs,
@@ -51,49 +52,49 @@
   home = {
     username = "nikita";
     homeDirectory = "/home/nikita";
-    packages = with pkgs; [
-        awscli2
-        bat
-        btop
-        ctags
-        delta
-        direnv
-        dnsutils
-        easyrsa
-        fd
-        file
-        firefox
-        gnumake
-        glow
-        helix
-        iftop
-        iotop
-        ipcalc
-        iperf3
-        keychain
-        linuxHeaders
-        nmap 
-        openssh
-        openssl
-        openssl.dev
-        pkg-config
-        mtr 
-        neovim
-        neofetch
-        pstree
-        qemu
-        ripgrep
-        rsync
-        screen
-        spotify
-        slack
-        stdenv.cc
-        strace
-        terraform
-        unzip
-        vscode
-        xxd
-        zip
+    packages = [
+        pkgs.awscli2
+        pkgs.bat
+        pkgs.btop
+        pkgs.ctags
+        pkgs.delta
+        pkgs.direnv
+        pkgs.dnsutils
+        pkgs.easyrsa
+        pkgs.fd
+        pkgs.file
+        pkgs.firefox
+        pkgs.gnumake
+        pkgs.glow
+        pkgs.helix
+        pkgs.iftop
+        pkgs.iotop
+        pkgs.ipcalc
+        pkgs.iperf3
+        pkgs.keychain
+        pkgs.linuxHeaders
+        pkgs.nmap 
+        pkgs.openssh
+        pkgs.openssl
+        pkgs.openssl.dev
+        pkgs.pkg-config
+        pkgs.mtr 
+        pkgs.neovim
+        pkgs.neofetch
+        pkgs.pstree
+        pkgs.qemu
+        pkgs.ripgrep
+        pkgs.rsync
+        pkgs.screen
+        pkgs.spotify
+        pkgs.slack
+        pkgs.stdenv.cc
+        pkgs.strace
+        pkgs.terraform
+        pkgs.unzip
+        unstable.vscode
+        pkgs.xxd
+        pkgs.zip
     ];
   };
 
