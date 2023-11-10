@@ -33,15 +33,7 @@
       nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         # > Our main nixos configuration file <
-        modules = [
-            ./configuration.nix
-            home-manager.nixosModules.home-manager
-            {
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.users.nikita = import ./home.nix;
-            }
-        ];
+        modules = [./nixos/configuration.nix];
       };
     };
 
@@ -53,7 +45,7 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
         extraSpecialArgs = {inherit inputs outputs;};
         # > Our main home-manager configuration file <
-        modules = [./home.nix];
+        modules = [./home-manager/home.nix];
       };
     };
   };

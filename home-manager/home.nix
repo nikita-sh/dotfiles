@@ -86,7 +86,6 @@
         rsync
         screen
         spotify
-        slack
         stdenv.cc
         strace
         terraform

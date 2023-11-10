@@ -78,7 +78,7 @@
   networking = {
     hostName = "nixos";
     networkmanager = {
-	    enable = true;
+	enable = true;
     };
   };
 
