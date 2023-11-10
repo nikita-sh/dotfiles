@@ -131,7 +131,7 @@
             l = "log";
             d = "diff";
             rl = "reflog";
-            m = "merge"
+            m = "merge";
         };
         extraConfig = {
             core.editor = "$EDITOR";
