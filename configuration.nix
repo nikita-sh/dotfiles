@@ -82,7 +82,6 @@
     };
   };
 
-
   # TODO: This is just an example, be sure to use whatever bootloader you prefer
   boot.loader.systemd-boot.enable = true;
 
@@ -104,8 +103,6 @@
     layout = "us";
     xkbVariant = "";
   };
-
-  services.tailscale.enable = true;
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -147,7 +144,6 @@
     neovim
     zsh
     zsh-powerlevel10k
-    tailscale
   ];
 
   programs.zsh.enable = true;

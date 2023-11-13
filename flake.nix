@@ -3,8 +3,8 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     # Home manager
     home-manager.url = "github:nix-community/home-manager/release-23.05";
@@ -21,19 +21,18 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-unstable,
     home-manager,
     ...
   } @ inputs: let
     inherit (self) outputs;
-    system = "x86_64-linux";
-    unstable = import inputs.nixpkgs-unstable {inherit system;};
   in {
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#your-hostname'
     nixosConfigurations = {
       # FIXME replace with your hostname
       nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs outputs unstable;};
+        specialArgs = {inherit inputs outputs;};
         # > Our main nixos configuration file <
         modules = [
             ./configuration.nix
@@ -41,7 +40,7 @@
             {
                 # home-manager.useGlobalPkgs = true;
                 # home-manager.useUserPackages = true;
-                home-manager.extraSpecialArgs = {inherit inputs outputs unstable;};
+                home-manager.extraSpecialArgs = {inherit inputs outputs;};
                 home-manager.users.nikita = import ./home.nix;
             }
         ];
