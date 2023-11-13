@@ -22,10 +22,10 @@
 
     # Import your generated (nixos-generate-config) hardware configuration
     # ./hardware-configuration.nix
-    /home/nikita/dev/vital-nix/system/software-workstation.nix
-    /home/nikita/dev/vital-nix/system/thinkpad.nix
-    /home/nikita/dev/vital-nix/system/xmonad.nix
-    /home/nikita/dev/vital-nix/system/office-vpn.nix
+    ./software-workstation.nix
+    ./thinkpad.nix
+    ./xmonad.nix
+    ./office-vpn.nix
   ];
 
   office-vpn = {

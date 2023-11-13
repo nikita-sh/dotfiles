@@ -22,7 +22,7 @@
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-    ./office-vpn.nix
+    ./.office-vpn/vpn.nix
   ];
 
   office-vpn = {
