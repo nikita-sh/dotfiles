@@ -22,13 +22,16 @@
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-    ./.office-vpn/vpn.nix
+    # /home/nikita/dev/vital-nix/system/software-workstation.nix
+    # /home/nikita/dev/vital-nix/system/thinkpad.nix
+    # /home/nikita/dev/vital-nix/system/xmonad.nix
+    # /home/nikita/dev/vital-nix/system/office-vpn.nix
   ];
 
-  office-vpn = {
-    address = "192.168.5.98/32";
-    privateKeyFile = /home/nikita/.office-vpn/private.key;
-  };
+#   office-vpn = {
+#     address = "192.168.5.98/32";
+#     privateKeyFile = /home/nikita/.office-vpn/private.key;
+#   };
 
   nixpkgs = {
     # You can add overlays here
