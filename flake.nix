@@ -25,8 +25,7 @@
     ...
   } @ inputs: let
     inherit (self) outputs;
-    system = "x86_64-linux";
-    unstable = import inputs.nixpkgs-unstable {inherit system;};
+    unstable = import inputs.nixpkgs-unstable {system = "x86_64-linux"; config.allowUnfree = true; };
   in {
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#your-hostname'
