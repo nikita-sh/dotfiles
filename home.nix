@@ -53,6 +53,7 @@
     homeDirectory = "/home/nikita";
     packages = with pkgs; [
         awscli2
+	ripgrep
         bat
         btop
         ctags
@@ -94,6 +95,11 @@
         vscode
         xxd
         zip
+	binutils
+	usbutils
+	libftdi
+	libusb
+	zoom-us
     ];
   };
 

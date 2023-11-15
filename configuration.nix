@@ -124,7 +124,7 @@
     #media-session.enable = true;
   };
 
-
+  services.tailscale.enable = true;
 
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
   users.users = {
@@ -138,18 +138,16 @@
         # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
       ];
       # TODO: Be sure to add any other groups you need (such as networkmanager, audio, docker, etc)
-      extraGroups = ["networkmanager" "wheel"];
+      extraGroups = ["networkmanager" "wheel" "dialout"];
     };
   };
 
   environment.systemPackages = with pkgs; [
-    binutils
-    usbutils
-    libusb
     neovim
     zsh
     zsh-powerlevel10k
     udev
+    tailscale
   ];
 
   services.udev.packages = [
