@@ -52,8 +52,9 @@
     username = "nikita";
     homeDirectory = "/home/nikita";
     packages = with pkgs; [
+        obsidian
         awscli2
-	ripgrep
+	    ripgrep
         bat
         btop
         ctags
@@ -95,11 +96,11 @@
         vscode
         xxd
         zip
-	binutils
-	usbutils
-	libftdi
-	libusb
-	zoom-us
+        binutils
+        usbutils
+        libftdi
+        libusb
+        zoom-us
     ];
   };
 
@@ -131,6 +132,7 @@
             st = "stash";
             pfwl = "push --force-with-lease";
             co = "checkout";
+	        cob = "checkout -b";
             r = "rebase";
             rbi = "rebase -i";
             a = "add";

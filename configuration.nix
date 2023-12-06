@@ -22,16 +22,16 @@
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-    # /home/nikita/dev/vital-nix/system/software-workstation.nix
-    # /home/nikita/dev/vital-nix/system/thinkpad.nix
-    # /home/nikita/dev/vital-nix/system/xmonad.nix
-    # /home/nikita/dev/vital-nix/system/office-vpn.nix
+    ./system/software-workstation.nix
+    ./system/thinkpad.nix
+    ./system/xmonad.nix
+    ./system/office-vpn.nix
   ];
 
-#   office-vpn = {
-#     address = "192.168.5.98/32";
-#     privateKeyFile = /home/nikita/.office-vpn/private.key;
-#   };
+  office-vpn = {
+    address = "192.168.5.98/32";
+    privateKeyFile = /home/nikita/.office-vpn/private.key;
+  };
 
   nixpkgs = {
     # You can add overlays here
@@ -65,11 +65,30 @@
     nixPath = lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
 
     settings = {
+      trusted-users = [ "nikita" ];
       # Enable flakes and new 'nix' command
       experimental-features = "nix-command flakes";
       # Deduplicate and optimize nix store
       auto-optimise-store = true;
     };
+    distributedBuilds = true;
+    extraOptions = ''
+      builders-use-substitutes = true
+      keep-outputs = true
+      keep-derivations = true
+    '';
+    buildMachines = [
+      {
+        hostName = "hydra-aarch64.vital.company";
+        sshUser = "nikita";
+        sshKey = "/home/nikita/.ssh/id_rsa";
+        system = "aarch64-linux";
+        maxJobs = 4;
+        speedFactor = 2;
+        supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+        mandatoryFeatures = [ ];
+      }
+    ];
   };
 
   # FIXME: Add the rest of your current configuration
@@ -78,7 +97,7 @@
   networking = {
     hostName = "nixos";
     networkmanager = {
-	enable = true;
+	    enable = true;
     };
   };
 
@@ -152,6 +171,10 @@
     udev
     tailscale
   ];
+
+  programs.bash.interactiveShellInit = ''
+    eval "$(${pkgs.direnv}/bin/direnv hook bash)"
+  '';
 
   services.udev.packages = [
     (pkgs.writeTextFile {
