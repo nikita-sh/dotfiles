@@ -22,11 +22,11 @@
   };
 
   outputs = {
+    neovim-flake,
     self,
     nixpkgs,
     nixpkgs-unstable,
     home-manager,
-    neovim-flake,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -36,14 +36,17 @@
         config.vim.theme.enable = true;
     };
     customNeovim = neovim-flake.lib.neovimConfiguration {
-        modules = [configModule];
-        inherit pkgs;
+	modules = [configModule];
+	inherit pkgs;
     };
   in {
-    pkgs.${system}.neovim = customNeovim;
-    
+    packages.${system}.neovim = customNeovim;
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#your-hostname'
+
+    environment.systemPackages = with pkgs; [
+        neovim-flake.defaultPackage.${pkgs.system} 
+    ];
     nixosConfigurations = {
       # FIXME replace with your hostname
       nixos = nixpkgs.lib.nixosSystem {
@@ -51,6 +54,7 @@
         # > Our main nixos configuration file <
         modules = [
             ./configuration.nix
+	    
             home-manager.nixosModules.home-manager
             {
                 # home-manager.useGlobalPkgs = true;
@@ -67,6 +71,7 @@
     homeConfigurations = {
       # FIXME replace with your username@hostname
       "nikita@nixos" = home-manager.lib.homeManagerConfiguration {
+        # pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
         extraSpecialArgs = {inherit inputs outputs;};
         # > Our main home-manager configuration file <
         modules = [./home.nix];

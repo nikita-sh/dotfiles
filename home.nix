@@ -52,7 +52,7 @@
     username = "nikita";
     homeDirectory = "/home/nikita";
     packages = with pkgs; [
-        obsidian
+        # obsidian
         awscli2
 	    ripgrep
         bat
@@ -80,7 +80,7 @@
         openssl.dev
         pkg-config
         mtr 
-        neovim
+        # neovim
         neofetch
         pstree
         qemu

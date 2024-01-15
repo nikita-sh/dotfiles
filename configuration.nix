@@ -164,7 +164,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    neovim
+    # neovim
     zsh
     zsh-powerlevel10k
     udev
