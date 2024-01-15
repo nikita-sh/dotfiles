@@ -146,6 +146,7 @@
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
 
   services.tailscale.enable = true;
+  systemd.services.NetworkManager-wait-online.enable = false; 
 
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
   users.users = {

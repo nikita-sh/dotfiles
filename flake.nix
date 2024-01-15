@@ -36,17 +36,14 @@
         config.vim.theme.enable = true;
     };
     customNeovim = neovim-flake.lib.neovimConfiguration {
-	modules = [configModule];
-	inherit pkgs;
+        modules = [configModule];
+        inherit pkgs;
     };
   in {
     packages.${system}.neovim = customNeovim;
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#your-hostname'
-
-    environment.systemPackages = with pkgs; [
-        neovim-flake.defaultPackage.${pkgs.system} 
-    ];
+    
     nixosConfigurations = {
       # FIXME replace with your hostname
       nixos = nixpkgs.lib.nixosSystem {
