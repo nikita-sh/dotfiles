@@ -10,6 +10,9 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    # neovim
+    neovim-flake.url = "github:nikita-sh/neovim-flake";
+
     # TODO: Add any other flake you might need
     # hardware.url = "github:nixos/nixos-hardware";
 
@@ -23,10 +26,22 @@
     nixpkgs,
     nixpkgs-unstable,
     home-manager,
+    neovim-flake,
     ...
   } @ inputs: let
     inherit (self) outputs;
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+    configModule = {
+        config.vim.theme.enable = true;
+    };
+    customNeovim = neovim-flake.lib.neovimConfiguration {
+        modules = [configModule];
+        inherit pkgs;
+    };
   in {
+    pkgs.${system}.neovim = customNeovim;
+    
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#your-hostname'
     nixosConfigurations = {
@@ -52,7 +67,6 @@
     homeConfigurations = {
       # FIXME replace with your username@hostname
       "nikita@nixos" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
         extraSpecialArgs = {inherit inputs outputs;};
         # > Our main home-manager configuration file <
         modules = [./home.nix];
