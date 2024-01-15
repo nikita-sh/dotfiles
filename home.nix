@@ -175,6 +175,16 @@
         theme = "powerlevel10k/powerlevel10k";
       };
     };
+
+    neovim.plugins = [
+        pkgs.vimPlugins.gruvbox
+        pkgs.vimPlugins.ale
+        pkgs.vimPlugins.vim-fugitive
+        pkgs.vimPlugins.nerdtree
+        pkgs.vimPlugins.syntastic
+        pkgs.vimPlugins.vim-surround
+        pkgs.vimPlugins.vim-airline
+    ];
   };
 
   home.file.".zshrc".source = ./dot/dot-zshrc;
