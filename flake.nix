@@ -75,6 +75,7 @@
             };
         };
     };
+
     customNeovim = neovim-flake.lib.neovimConfiguration {
         modules = [configModule];
         inherit pkgs;
