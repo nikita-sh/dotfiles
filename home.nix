@@ -105,7 +105,10 @@
   };
 
   # Add stuff for your user as you see fit:
-  # programs.neovim.enable = true;
+  programs.neovim = {
+    enable = true;
+    vimAlias = "nix run /home/nikita/dotfiles#neovim --";
+  };
   # home.packages = with pkgs; [ steam ];
 
   # Enable home-manager and git
