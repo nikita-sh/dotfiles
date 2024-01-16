@@ -54,7 +54,7 @@
     packages = with pkgs; [
         # obsidian
         awscli2
-	    ripgrep
+	ripgrep
         bat
         btop
         ctags
@@ -105,13 +105,7 @@
   };
 
   # Add stuff for your user as you see fit:
-  programs.neovim = {
-    enable = true;
-    vimAlias = "nix run /home/nikita/dotfiles#neovim --";
-  };
   # home.packages = with pkgs; [ steam ];
-
-  # Enable home-manager and git
   programs = {
     home-manager.enable = true;
 
@@ -167,20 +161,29 @@
 
     zsh = {
       enable = true;
-      defaultKeymap = "vicmd";
       shellAliases = {
         g = "git";
+        nvim = "nix run /home/nikita/dev/dotfiles#neovim --";
       };
-      oh-my-zsh = {
-        enable = true;
-        plugins = [
-        ];
-        theme = "powerlevel10k/powerlevel10k";
-      };
+      plugins = [
+          {
+            name = "powerlevel10k";
+            src = pkgs.zsh-powerlevel10k;
+            file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+          } 
+      ];
+      initExtra = ''
+        source /home/nikita/dev/dotfiles/dot/dot-p10k.zsh
+      '';
+    #   initExtra = ''
+    #     # Powerlevel10k Zsh theme  
+    #     source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme  
+    #     test -f ~/dev/dotfiles/dot/dot-p10k.zsh && ~/dev/dotfiles/dot/dot-p10k.zsh 
+    #   '';
     };
   };
 
-  home.file.".zshrc".source = ./dot/dot-zshrc;
+#   home.file.".zshrc".source = ./dot/dot-zshrc;
   home.file.".p10k.zsh".source = ./dot/dot-p10k.zsh;
 
   # Nicely reload system units when changing configs

@@ -36,10 +36,10 @@ in
       pkgs.linuxPackages.nvidia_x11.out
     ];
 
-    pulseaudio.enable = false;
+    # pulseaudio.enable = false;
   };
 
-  sound.enable = true;
+  # sound.enable = true;
 
   services = {
     blueman.enable = true;

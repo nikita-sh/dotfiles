@@ -136,10 +136,6 @@
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
   };
 
   hardware.bluetooth.enable = true; # enables support for Bluetooth
@@ -170,6 +166,7 @@
     zsh-powerlevel10k
     udev
     tailscale
+    home-manager
   ];
 
   programs.bash.interactiveShellInit = ''
@@ -244,7 +241,13 @@
     destination = "/etc/udev/rules.d/69-probe-rs.rules";
   })];
 
-  programs.zsh.enable = true;
+
+  programs = {
+    zsh = {
+      enable = true;
+    };
+  };
+
   users.defaultUserShell = pkgs.zsh;
 
   # This setups a SSH server. Very important if you're setting up a headless system.
