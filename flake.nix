@@ -101,6 +101,17 @@
             }
         ];
       };
+      morana = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+	modules = [
+	  ./morana/morana.nix
+	  #home-manger.nixosModules.home-manager
+	  #{
+          #  home-manager.extraSpecialArgs = {inherit inputs outputs;};
+	  #  home-manager.users.n = import ./morana/home.nix;
+	  #}
+	];
+      };
     };
 
     # Standalone home-manager configuration entrypoint
@@ -112,6 +123,12 @@
         extraSpecialArgs = {inherit inputs outputs;};
         # > Our main home-manager configuration file <
         modules = [./home.nix];
+      };
+      "n@morana" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
+        extraSpecialArgs = {inherit inputs outputs;};
+        # > Our main home-manager configuration file <
+        modules = [./morana/home.nix];
       };
     };
   };
