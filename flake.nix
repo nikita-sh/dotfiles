@@ -18,9 +18,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # TODO: Add any other flake you might need
-    # hardware.url = "github:nixos/nixos-hardware";
-
     # Shameless plug: looking for a way to nixify your themes and make
     # everything match nicely? Try nix-colors!
     # nix-colors.url = "github:misterio77/nix-colors";
@@ -37,6 +34,7 @@
     inherit (self) outputs;
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+    # todo: move this to an overlay?
     configModule = {
         config.vim = {
             theme.enable = true;
@@ -87,36 +85,25 @@
         inherit pkgs;
     };
   in {
+    # build nvim
     packages.${system}.neovim = customNeovim;
+
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#your-hostname'
-    
     nixosConfigurations = {
-      # FIXME replace with your hostname
       nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
-        # > Our main nixos configuration file <
         modules = [
-            ./configuration.nix
+            ./work-nixos/configuration.nix
             home-manager.nixosModules.home-manager
-            {
-                # home-manager.useGlobalPkgs = true;
-                # home-manager.useUserPackages = true;
-                home-manager.extraSpecialArgs = {inherit inputs outputs;};
-                home-manager.users.nikita = import ./home.nix;
-            }
         ];
       };
+
       morana = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./morana/morana.nix
           NixOS-WSL.nixosModules.wsl
-          #home-manger.nixosModules.home-manager
-          #{
-                #  home-manager.extraSpecialArgs = {inherit inputs outputs;};
-          #  home-manager.users.n = import ./morana/home.nix;
-          #}
         ];
       };
     };
@@ -124,17 +111,15 @@
     # Standalone home-manager configuration entrypoint
     # Available through 'home-manager --flake .#your-username@your-hostname'
     homeConfigurations = {
-      # FIXME replace with your username@hostname
       "nikita@nixos" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
         extraSpecialArgs = {inherit inputs outputs;};
-        # > Our main home-manager configuration file <
-        modules = [./home.nix];
+        modules = [./work-nixos/home.nix];
       };
+
       "n@morana" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
         extraSpecialArgs = {inherit inputs outputs;};
-        # > Our main home-manager configuration file <
         modules = [./morana/home.nix];
       };
     };

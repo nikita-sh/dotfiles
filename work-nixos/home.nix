@@ -54,7 +54,7 @@
     packages = with pkgs; [
         # obsidian
         awscli2
-	ripgrep
+	      ripgrep
         bat
         btop
         ctags
@@ -80,7 +80,6 @@
         openssl.dev
         pkg-config
         mtr 
-        # neovim
         neofetch
         pstree
         qemu
@@ -184,7 +183,7 @@
   };
 
 #   home.file.".zshrc".source = ./dot/dot-zshrc;
-  home.file.".p10k.zsh".source = ./dot/dot-p10k.zsh;
+  home.file.".p10k.zsh".source = ../dot/dot-p10k.zsh;
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
