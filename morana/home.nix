@@ -117,7 +117,8 @@
     git = {
         package = pkgs.git;
         enable = true;
-        userName = "Nikita Shumeiko";
+        userName = "nikita-sh";
+        userEmail = "shumeiko.nikita@gmail.com"
         aliases = {
             p = "pull";
             pr = "pull --rebase";
