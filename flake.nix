@@ -13,6 +13,11 @@
     # neovim
     neovim-flake.url = "github:nikita-sh/neovim-flake";
 
+    NixOS-WSL = {
+      url = "github:nix-community/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # TODO: Add any other flake you might need
     # hardware.url = "github:nixos/nixos-hardware";
 
@@ -26,6 +31,7 @@
     self,
     nixpkgs,
     home-manager,
+    NixOS-WSL,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -103,14 +109,15 @@
       };
       morana = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
-	modules = [
-	  ./morana/morana.nix
-	  #home-manger.nixosModules.home-manager
-	  #{
-          #  home-manager.extraSpecialArgs = {inherit inputs outputs;};
-	  #  home-manager.users.n = import ./morana/home.nix;
-	  #}
-	];
+        modules = [
+          ./morana/morana.nix
+          NixOS-WSL.nixosModules.wsl
+          #home-manger.nixosModules.home-manager
+          #{
+                #  home-manager.extraSpecialArgs = {inherit inputs outputs;};
+          #  home-manager.users.n = import ./morana/home.nix;
+          #}
+        ];
       };
     };
 

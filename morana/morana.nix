@@ -21,7 +21,7 @@
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-    <nixos-wsl/modules>
+    #<nixos-wsl/modules>
    ];
 
   nixpkgs = {
@@ -47,7 +47,7 @@
   };
 
   wsl.enable = true;
-  wsl.defaultUser = "nixos";
+  wsl.defaultUser = "n";
 
 
   nix = {
