@@ -162,7 +162,7 @@
       enable = true;
       shellAliases = {
         g = "git";
-        nvim = "nix run /home/nikita/dev/dotfiles#neovim --";
+        nvim = "nix run /home/nikita/dev/nix-env#neovim --";
       };
       plugins = [
           {
@@ -172,7 +172,7 @@
           } 
       ];
       initExtra = ''
-        source /home/nikita/dev/dotfiles/dot/dot-p10k.zsh
+        source /home/nikita/dev/nix-env/dot/dot-p10k.zsh
       '';
     #   initExtra = ''
     #     # Powerlevel10k Zsh theme  

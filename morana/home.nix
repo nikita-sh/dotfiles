@@ -164,7 +164,7 @@
       enable = true;
       shellAliases = {
         g = "git";
-        nvim = "nix run /home/n/dev/dotfiles#neovim --";
+        nvim = "nix run /home/n/dev/nix-env#neovim --";
       };
       plugins = [
           {
@@ -174,12 +174,12 @@
           } 
       ];
       initExtra = ''
-        source /home/n/dev/dotfiles/dot/dot-p10k.zsh
+        source /home/n/dev/nix-env/dot/dot-p10k.zsh
       '';
     #   initExtra = ''
     #     # Powerlevel10k Zsh theme  
     #     source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme  
-    #     test -f ~/dev/dotfiles/dot/dot-p10k.zsh && ~/dev/dotfiles/dot/dot-p10k.zsh 
+    #     test -f ~/dev/nix-env/dot/dot-p10k.zsh && ~/dev/nix-env/dot/dot-p10k.zsh 
     #   '';
     };
   };
