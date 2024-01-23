@@ -39,11 +39,30 @@
         config.vim = {
             theme.enable = true;
             languages = {
-                nix.enable = true;
-                rust.enable = true;
+                nix = {
+                  enable = true;
+                  extraDiagnostics.enable = true;
+                  format.enable = true;
+                  lsp.enable = true;
+                  treesitter.enable = true;
+                };
+                rust = {
+                  enable = true;
+                  crates = {
+                    enable = true;
+                    codeActions = true;
+                  };
+                  debugger.enable = true;
+                  lsp.enable = true;
+                };
                 sql.enable = true;
                 ts.enable = true;
-                python.enable = true;
+                python = {
+                  enable = true;
+                  format.enable = true;
+                  lsp.enable = true;
+                  treesitter.enable = true;
+                };
                 markdown.enable = true;
             };
             filetree = {
