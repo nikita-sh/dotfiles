@@ -57,6 +57,7 @@
 	      ripgrep
         bat
         btop
+        cargo
         ctags
         delta
         direnv
@@ -85,6 +86,7 @@
         qemu
         ripgrep
         rsync
+        rustc
         screen
         spotify
         slack

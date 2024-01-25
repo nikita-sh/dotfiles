@@ -21,7 +21,7 @@
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-    # ../system/software-workstation.nix
+    ../system/software-workstation.nix
     ../system/thinkpad.nix
     #./system/xmonad.nix
     ../system/office-vpn.nix
