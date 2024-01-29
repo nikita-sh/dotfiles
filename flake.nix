@@ -38,6 +38,9 @@
     configModule = {
         config.vim = {
             theme.enable = true;
+            autocomplete = {
+              enable = true;
+            };
             languages = {
                 nix = {
                   enable = true;
