@@ -50,19 +50,19 @@
       ''
     ];
 
-    #services = {
-    #  openssh.enable = true;
-    #  xserver = {
-    #    enable = true;
-    #    layout = "us";
-    #    libinput.enable = true;
+    services = {
+      openssh.enable = true;
+      # xserver = {
+      #   enable = true;
+      #   layout = "us";
+      #   libinput.enable = true;
 
-    #    desktopManager = {
-    #      xterm.enable = false;
-    #    };
-    #  };
-    #  autorandr.enable = true;
-    #};
+      #   desktopManager = {
+      #     xterm.enable = false;
+      #  };
+      #};
+      autorandr.enable = true;
+    };
 
     users.defaultUserShell = pkgs.zsh;
 
