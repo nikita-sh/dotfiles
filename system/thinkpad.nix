@@ -44,10 +44,10 @@ in
   services = {
     blueman.enable = true;
 
-    xserver = {
-      dpi = 192;
-      videoDrivers = [ "nvidia" ];
-    };
+   # xserver = {
+   #   dpi = 192;
+   #   videoDrivers = [ "nvidia" ];
+   # };
   };
 }
 
