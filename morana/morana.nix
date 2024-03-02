@@ -153,6 +153,7 @@
     openvpn
     samba
     inetutils
+    redis
   ];
 
   programs.bash.interactiveShellInit = ''
