@@ -150,6 +150,7 @@
     udev
     tailscale
     home-manager
+    openvpn
   ];
 
   programs.bash.interactiveShellInit = ''
