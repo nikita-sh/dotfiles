@@ -151,6 +151,8 @@
     tailscale
     home-manager
     openvpn
+    samba
+    inetutils
   ];
 
   programs.bash.interactiveShellInit = ''
