@@ -93,6 +93,7 @@
         stdenv.cc
         strace
         terraform
+        tmux
         unzip
         vscode
         xxd
