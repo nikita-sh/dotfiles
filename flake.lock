@@ -202,11 +202,11 @@
         "tidalcycles": "tidalcycles"
       },
       "locked": {
-        "lastModified": 1697922087,
-        "narHash": "sha256-b7zp7GxpXnCqnKkVv0cY16BETjhnCPA/uVvpLUsz7X8=",
+        "lastModified": 1709609169,
+        "narHash": "sha256-eAJljMeL5eqtkMxGUVUhawYd1cg40bf+6xRGx0N6RUg=",
         "owner": "nikita-sh",
         "repo": "neovim-flake",
-        "rev": "7bcc215d38226892849411721cfbc096fd7e4d2d",
+        "rev": "1c3996465d93e90a7f1a4b92180df830b3571047",
         "type": "github"
       },
       "original": {

@@ -34,72 +34,76 @@
     inherit (self) outputs;
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
-    # todo: move this to an overlay?
     configModule = {
-        config.vim = {
-            theme.enable = true;
-            autocomplete = {
-              enable = true;
-            };
-            languages = {
-                nix = {
-                  enable = true;
-                  extraDiagnostics.enable = true;
-                  format.enable = true;
-                  lsp.enable = true;
-                  treesitter.enable = true;
-                };
-                rust = {
-                  enable = true;
-                  crates = {
-                    enable = true;
-                    codeActions = true;
-                  };
-                  debugger.enable = true;
-                  lsp.enable = true;
-                };
-                sql.enable = true;
-                ts.enable = true;
-                python = {
-                  enable = true;
-                  format.enable = true;
-                  lsp.enable = true;
-                  treesitter.enable = true;
-                };
-                markdown.enable = true;
-            };
-            filetree = {
-                nvimTreeLua = {
-                    enable = true;
-                    openTreeOnNewTab = true;
-                    disableNetRW = true;
-                };
-            };
-            git = {
-                enable = true;
-                gitsigns.enable = true;
-            };
-            telescope = {
-                enable = true;
-            };
-            autopairs = {
-                enable = true;
-            };
-            statusline = {
-                lualine = {
-                    enable = true;
-                };
-            };
-            visuals = {
-                enable = true;
-                cursorWordline.enable = true;
-                indentBlankline = {
-                    enable = true;
-                    eolChar = null;
-                    fillChar = null;
-                };
-            };
+      config.vim = {
+        theme.enable = true;
+        autocomplete = {
+          enable = true;
         };
+        languages = {
+          haskell = { 
+            enable = true;
+            treesitter.enable = true;
+            lsp.enable = true;
+          };
+          nix = {
+            enable = true;
+            extraDiagnostics.enable = true;
+            format.enable = true;
+            lsp.enable = true;
+            treesitter.enable = true;
+          };
+          rust = {
+            enable = true;
+            crates = {
+              enable = true;
+              codeActions = true;
+            };
+            debugger.enable = true;
+            lsp.enable = true;
+          };
+          sql.enable = true;
+          ts.enable = true;
+          python = {
+            enable = true;
+            format.enable = true;
+            lsp.enable = true;
+            treesitter.enable = true;
+          };
+          markdown.enable = true;
+        };
+        filetree = {
+          nvimTreeLua = {
+              enable = true;
+              openTreeOnNewTab = true;
+              disableNetRW = true;
+          };
+        };
+        git = {
+          enable = true;
+          gitsigns.enable = true;
+        };
+        telescope = {
+          enable = true;
+        };
+        autopairs = {
+          enable = true;
+        };
+        statusline = {
+          lualine = {
+              enable = true;
+          };
+        };
+        visuals = {
+          enable = true;
+          cursorWordline.enable = true;
+          indentBlankline = {
+            enable = true;
+            eolChar = null;
+            fillChar = null;
+          };
+        };
+      };
     };
 
     customNeovim = neovim-flake.lib.neovimConfiguration {
