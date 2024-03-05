@@ -36,7 +36,11 @@
     pkgs = nixpkgs.legacyPackages.${system};
     configModule = {
       config.vim = {
-        theme.enable = true;
+        theme = {
+          enable = true;
+          style = "dark";
+          name = "gruvbox";
+        };
         autocomplete = {
           enable = true;
         };

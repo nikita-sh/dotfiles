@@ -167,6 +167,13 @@
     udev
     tailscale
     home-manager
+    ghc
+    haskell-language-server
+    haskellPackages.xmobar
+    haskellPackages.xmonad
+    haskellPackages.xmonad-contrib
+    rustc
+    rustup
   ];
 
   programs.bash.interactiveShellInit = ''
