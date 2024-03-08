@@ -75,6 +75,7 @@
         ipcalc
         iperf3
         keychain
+        kitty
         linuxHeaders
         nmap 
         openssh
@@ -167,6 +168,7 @@
       shellAliases = {
         g = "git";
         nvim = "nix run /home/nikita/dev/nix-env#neovim --";
+        s = "kitten ssh";
       };
       plugins = [
           {
@@ -187,7 +189,6 @@
       ];
       initExtra = ''
         source /home/nikita/dev/nix-env/dot/dot-p10k.zsh
-        prompt_nix_shell_setup
       '';
     #   initExtra = ''
     #     # Powerlevel10k Zsh theme  

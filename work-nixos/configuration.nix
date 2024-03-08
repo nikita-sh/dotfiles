@@ -174,6 +174,8 @@
     haskellPackages.xmonad-contrib
     rustc
     rustup
+    w3m
+    imagemagick
   ];
 
   programs.bash.interactiveShellInit = ''
