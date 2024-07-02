@@ -20,6 +20,7 @@
   };
 
   outputs = { home-manager, nixpkgs, spicetify-nix, self, ... }@inputs: {
+    # TODO: this doesnt work - need to map these from imports to module format
     homeManagerModules = { 
       default = [
         ./bat
