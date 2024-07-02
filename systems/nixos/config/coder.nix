@@ -1,0 +1,1 @@
+{ ... }: { services.coder = { enable = true; }; }
