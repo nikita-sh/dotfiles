@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   obsidianWrapper = pkgs.writeShellApplication {
     name = "obsidian";
     text = ''
@@ -9,4 +8,6 @@ let
     #   ln -s ${pkgs.obsidian}/share $out/share
     # '';
   };
-in { home.packages = [ obsidianWrapper ]; }
+in {
+  home.packages = [obsidianWrapper];
+}

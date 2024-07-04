@@ -2,10 +2,11 @@
   wayland.windowManager.hyprland = {
     extraConfig = ''
       $mainMod = SUPER
-
+      
       # monitor=,preferred,auto,1
       # monitor=,preferred,0x0,1
-      monitor=,3840x2400,0x0,2
+      monitor=eDP-1,3840x2400,0x0,2
+      monitor=,preferred,auto,1
 
       # autostart
       exec-once = systemctl --user import-environment &
@@ -106,34 +107,37 @@
       bind = $mainMod, Return, exec, kitty
       bind = ALT, Return, exec, kitty --title float_kitty
       bind = $mainMod SHIFT, Return, exec, kitty --start-as=fullscreen -o 'font_size=16'
-      bind = $mainMod, B, exec, hyprctl dispatch exec '[workspace 2 silent] firefox'
       bind = $mainMod, Q, killactive,
       bind = $mainMod, F, fullscreen, 0
       bind = $mainMod SHIFT, F, fullscreen, 1
       bind = $mainMod, Space, togglefloating,
       bind = $mainMod, D, exec, pkill wofi || wofi --show drun --normal-window
-      bind = $mainMod SHIFT, D, exec, hyprctl dispatch exec '[workspace 6 silent] discord --enable-features=UseOzonePlatform --ozone-platform=wayland'
       bind = $mainMod SHIFT, S, exec, hyprctl dispatch exec '[workspace 5 silent] SoundWireServer'
       bind = $mainMod, Escape, exec, swaylock
       bind = $mainMod SHIFT, Escape, exec, shutdown-script
       bind = $mainMod, P, pseudo,
       bind = $mainMod, J, togglesplit,
       bind = $mainMod, E, exec, nemo
-      bind = $mainMod SHIFT, B, exec, pkill -SIGUSR1 .waybar-wrapped
+      bind = $mainMod ALT, B, exec, pkill -SIGUSR1 .waybar-wrapped
       bind = $mainMod, C ,exec, hyprpicker -a
       bind = $mainMod, G,exec, $HOME/.local/bin/toggle_layout
       bind = $mainMod, W,exec, pkill wofi || wallpaper-picker
       bind = $mainMod SHIFT, W, exec, vm-start
-      bind = $mainMod, S, exec, ELECTRON_OZONE_PLATFORM_HINT=wayland hyprctl dispatch exec '[workspace 3 silent]' slack
       bind =,XF86MonBrightnessDown,exec,brightnessctl set 10%-
       bind =,XF86MonBrightnessUp,exec,brightnessctl set +10%
       bind =,XF86Messenger,exec,playerctl previous
       bind =,XF86Go,exec,playerctl play-pause
       bind =,Cancel,exec,playerctl next
-      # bind = $mainMod SHIFT, S, exec, grimshot copy window
+      # bind = $mainMod ALT, S, exec, grimshot copy window
       bind = $mainMod SHIFT, C, exec, pkill cycle_wallpaper && ~/dev/nixos-config/wallpapers/cycle_wallpaper.sh 1800 &
-      bind = $mainMod SHIFT, M, exec, ELECTRON_OZONE_PLATFORM_HINT=wayland hyprctl dispatch exec '[workspace 4 silent] spotify --enable-features=UseOzonePlatform --ozone-platform=wayland'
+      
+      # program binds
+      bind = $mainMod SHIFT, V, exec, ELECTRON_OZONE_PLATFORM_HINT=wayland hyprctl dispatch exec '[workspace 2 silent] code /home/nikita/dev --enable-features=UseOzonePlatform --ozone-platform=wayland'
+      bind = $mainMod SHIFT, B, exec, hyprctl dispatch exec '[workspace 3 silent] firefox'
+      bind = $mainMod SHIFT, S, exec, ELECTRON_OZONE_PLATFORM_HINT=wayland hyprctl dispatch exec '[workspace 4 silent]' slack
       bind = $mainMod SHIFT, O, exec, ELECTRON_OZONE_PLATFORM_HINT=wayland hyprctl dispatch exec '[workspace 5 silent] obsidian --enable-features=UseOzonePlatform --ozone-platform=wayland'
+      bind = $mainMod SHIFT, M, exec, ELECTRON_OZONE_PLATFORM_HINT=wayland hyprctl dispatch exec '[workspace 6 silent] spotify --enable-features=UseOzonePlatform --ozone-platform=wayland'
+      bind = $mainMod SHIFT, D, exec, hyprctl dispatch exec '[workspace 7 silent] discord --enable-features=UseOzonePlatform --ozone-platform=wayland'
 
       # screenshot
       bind = $mainMod, Print, exec, grimblast --notify --cursor save area ~/Pictures/$(date +'%Y-%m-%d-At-%Ih%Mm%Ss').png
