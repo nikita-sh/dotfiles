@@ -37,7 +37,7 @@
     initContent = lib.mkBefore ''
       DISABLE_MAGIC_FUNCTIONS=true
       export "MICRO_TRUECOLOR=1"
-      source ~/dev/dotfiles/homes/modules/zsh/dot-p10k.zsh
+      source ~/dev/dotfiles/shared/zsh/dot-p10k.zsh
     '';
 
     plugins = [
