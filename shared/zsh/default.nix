@@ -82,7 +82,7 @@
         let
           cmd = if system == "darwin" then "nix run nix-darwin" else "nixos-rebuild";
         in
-        "sudo ${cmd} --flake ~/dotfiles/systems/${hostname}#${hostname}";
+        "sudo ${cmd} --flake ~/dev/dotfiles/systems/${hostname}#${hostname}";
 
       # home manager
       hmrb = "home-manager --flake ~/dev/dotfiles/homes/${hostname}#nikita@${hostname}";

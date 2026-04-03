@@ -20,16 +20,11 @@
         };
         modules = [
           ./hardware.nix
-          ../modules/bootloader.nix
-          ../modules/network.nix
-          ../modules/program.nix
-          ../modules/services.nix
-          ../modules/system.nix
+          ./config.nix
           ../modules/office-vpn.nix
           ../modules/software-workstation.nix
           ../modules/probe-rs.nix
           ../modules/vpn.nix
-          ../modules/security.nix
         ];
       };
     };

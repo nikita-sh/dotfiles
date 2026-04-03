@@ -21,13 +21,6 @@
           hostname = "mynah";
         };
         modules = [
-          inputs.vscode-server.nixosModules.default
-          nixos-wsl.nixosModules.wsl
-          ../modules/network.nix
-          ../modules/program.nix
-          ../modules/services.nix
-          ../modules/system.nix
-          ../modules/security.nix
           {
             wsl = {
               enable = true;
@@ -36,6 +29,9 @@
             system.stateVersion = "24.05";
             nixpkgs.config.allowUnfree = true;
           }
+          inputs.vscode-server.nixosModules.default
+          nixos-wsl.nixosModules.wsl
+          ./config.nix
         ];
       };
     };
