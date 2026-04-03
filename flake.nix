@@ -16,7 +16,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
-        formatter = pkgs.nixfmt;
+        formatter = pkgs.nixfmt-tree;
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             lua
