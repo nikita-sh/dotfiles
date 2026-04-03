@@ -9,6 +9,4 @@
       update_ms = 500;
     };
   };
-
-  # home.packages = (with pkgs; [ nvtop-intel ]);
 }

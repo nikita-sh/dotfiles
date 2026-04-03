@@ -8,7 +8,6 @@
         vscodevim.vim
         eamodio.gitlens
         github.vscode-pull-request-github
-        # hashicorp.terraform
         haskell.haskell
         jnoortheen.nix-ide
         mechatroner.rainbow-csv
@@ -30,7 +29,6 @@
         raspberry-pi.raspberry-pi-pico
         paulober.pico-w-go
         twxs.cmake
-        # ms-vscode.cpptools
         ms-vscode.cmake-tools
         ms-vscode.cpptools-extension-pack
         ms-vscode.vscode-serial-monitor
@@ -63,7 +61,7 @@
         "gitlens.telemetry.enabled" = false;
         "haskell.manageHLS" = "PATH";
         "nix.enableLanguageServer" = true;
-        # "nix.formatterPath" = "nixfmt";
+        "nix.formatterPath" = "nixfmt";
         "nix.serverPath" = "nil";
         "nix.serverSettings" = {
           "nil" = {
