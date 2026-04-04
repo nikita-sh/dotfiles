@@ -5,12 +5,7 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    vscode-server.url = "github:nix-community/nixos-vscode-server";
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
-    nil = {
-      url = "github:oxalica/nil";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     shared.url = "path:../../shared";
   };
 
@@ -19,9 +14,8 @@
       self,
       home-manager,
       nixpkgs,
-      shared,
       nix-vscode-extensions,
-      nil,
+      shared,
       ...
     }:
     let
