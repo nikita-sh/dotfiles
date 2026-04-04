@@ -2,7 +2,6 @@
 {
   networking = {
     hostName = "mynah";
-    networkmanager.enable = true;
   };
 
   services = {
@@ -11,7 +10,12 @@
     tailscale.enable = true;
   };
 
-  programs.ssh.startAgent = true;
+  programs = {
+    ssh.startAgent = true;
+    zsh.enable = true;
+  };
+
+  users.defaultUserShell = pkgs.zsh;
 
   environment.systemPackages = with pkgs; [
     git

@@ -28,4 +28,8 @@
   };
 
   security.pam.services.sudo_local.touchIdAuth = true;
+
+  programs.zsh.enable = true;
+
+  users.defaultUserShell = pkgs.zsh;
 }

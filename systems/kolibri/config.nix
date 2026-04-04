@@ -14,6 +14,8 @@
     ssh.startAgent = true;
   };
 
+  users.defaultUserShell = pkgs.zsh;
+
   services = {
     dbus.enable = true;
     openssh.enable = true;
