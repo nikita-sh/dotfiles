@@ -27,13 +27,25 @@
           nix-vscode-extensions.overlays.default
         ];
       };
+      hostname = "falke";
+      email = "nikita.shumeiko@vitalbio.com";
+      sessionVariables = {
+        HYDRA_AARCH64_BUILDER = "hydra-aarch64.vital.company";
+        HYDRA_X86_64_BUILDER = "hydra-x86-64.vital.company";
+        # HYDRA_AARCH64_BUILDER = "nixbuild.vital.company";
+        # HYDRA_X86_64_BUILDER = "nixbuild.vital.company";
+        HYDRA_SSH_USER = "nikita";
+        HYDRA_SSH_IDENTITY = "~/.ssh/id_ed25519";
+        NIX_KEY = "~/nix-keys/nixos.private.pem";
+      };
     in
     {
       homeConfigurations."nikita@falke" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
         extraSpecialArgs = {
-          inherit inputs system;
+          inherit hostname email system;
+          inputs = inputs // shared.inputs;
         };
 
         modules = [

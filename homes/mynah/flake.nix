@@ -23,13 +23,17 @@
       };
       system = "x86_64-linux";
       hostname = "mynah";
+      email = "dev@nikitashko.com";
     in
     {
       homeConfigurations."nikita@${hostname}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
+
         extraSpecialArgs = {
-          inherit inputs system hostname;
+          inherit system hostname email;
+          inputs = inputs // shared.inputs;
         };
+
         modules = [
           {
             home = {
@@ -46,6 +50,7 @@
           (shared.homeManagerModules.home-manager)
           (shared.homeManagerModules.nvim)
           (shared.homeManagerModules.packages)
+          (shared.homeManagerModules.vscode-server)
           (shared.homeManagerModules.lsd)
           (shared.homeManagerModules.zsh)
         ];

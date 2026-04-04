@@ -27,6 +27,9 @@
         );
     in
     {
+      # FIXME: this is kind of icky
+      inherit inputs;
+
       homeManagerModules = transformModulePaths [
         ./bat
         ./btop

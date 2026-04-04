@@ -3,6 +3,8 @@
   lib,
   system,
   hostname ? "",
+  env ? "",
+  sessionVariables ? {},
   ...
 }:
 {
@@ -11,6 +13,7 @@
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+
     oh-my-zsh = {
       enable = true;
       plugins = [
@@ -34,6 +37,7 @@
         "colorize"
       ];
     };
+    
     initContent = lib.mkBefore ''
       DISABLE_MAGIC_FUNCTIONS=true
       export "MICRO_TRUECOLOR=1"
@@ -77,7 +81,11 @@
       ns = "nix-shell --run zsh -p";
       nix-shell = "nix-shell --run zsh";
       nix-flake-update = "sudo nix flake update ~/dotfiles#";
-      nix-clean = "sudo nix-collect-garbage && sudo nix-collect-garbage -d && sudo rm /nix/var/nix/gcroots/auto/* && nix-collect-garbage && nix-collect-garbage -d";
+      nix-clean = ''
+        sudo nix-collect-garbage && sudo nix-collect-garbage -d \
+        && sudo rm /nix/var/nix/gcroots/auto/* && nix-collect-garbage \
+        && nix-collect-garbage -d
+      '';
       nixosrb =
         let
           cmd = if system == "darwin" then "nix run nix-darwin" else "nixos-rebuild";
@@ -115,7 +123,11 @@
       gst = "git stash";
       gstp = "git stash pop";
       gl = "git log";
-      glp = "git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all";
+      glp = ''
+        git log --graph --abbrev-commit --decorate \ 
+        --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' \
+        --all
+      '';
       grl = "git reflog";
       gd = "git diff";
       grb = "git rebase";
@@ -131,17 +143,6 @@
       # fw
       pbrun-atsam18 = "sudo probe-rs run --chip ATSAMD51J18A";
       pbrun-atsam20 = "sudo probe-rs run --chip ATSAMD51J20A";
-    };
-
-    # TODO: move to home-specific cfg
-    sessionVariables = {
-      HYDRA_AARCH64_BUILDER = "hydra-aarch64.vital.company";
-      HYDRA_X86_64_BUILDER = "hydra-x86-64.vital.company";
-      # HYDRA_AARCH64_BUILDER = "nixbuild.vital.company";
-      # HYDRA_X86_64_BUILDER = "nixbuild.vital.company";
-      HYDRA_SSH_USER = "nikita";
-      HYDRA_SSH_IDENTITY = "~/.ssh/id_ed25519";
-      NIX_KEY = "~/nix-keys/nixos.private.pem";
     };
   };
 

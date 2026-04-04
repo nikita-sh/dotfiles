@@ -1,11 +1,16 @@
-{ pkgs, ... }:
+{ 
+  pkgs, 
+  email ? "dev@nikitashko.com", 
+  ... 
+}:
 {
   programs.git = {
     enable = true;
     settings = {
       user = {
+        inherit email;
+
         name = "Nikita Shumeiko";
-        email = "nikita.shumeiko@vitalbio.com";
       };
 
       alias = {
