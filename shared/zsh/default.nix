@@ -4,7 +4,7 @@
   system,
   hostname ? "",
   env ? "",
-  sessionVariables ? {},
+  sessionVariables ? { },
   ...
 }:
 {
@@ -37,7 +37,7 @@
         "colorize"
       ];
     };
-    
+
     initContent = lib.mkBefore ''
       DISABLE_MAGIC_FUNCTIONS=true
       export "MICRO_TRUECOLOR=1"
