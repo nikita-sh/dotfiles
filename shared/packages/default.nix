@@ -33,5 +33,6 @@
     gh
     mosh
     buf
+    nil
   ];
 }
