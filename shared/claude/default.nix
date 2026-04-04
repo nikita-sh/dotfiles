@@ -4,7 +4,10 @@ let
 in
 {
   home.packages = [
-    pkgs.claude-code
     claude-code-log
   ];
+
+  programs.claude-code.enable = true;
+
+  home.file.".claude/CLAUDE.md".source = ./claude.md;
 }
