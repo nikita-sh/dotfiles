@@ -4,7 +4,7 @@
   system,
   hostname ? "",
   sessionVariables ? { },
-  p10k ? ./dot-p10k.zsh,
+  p10k ? ./foo.zsh,
   ...
 }:
 {
@@ -42,10 +42,15 @@
       ];
     };
 
-    initContent = lib.mkBefore ''
-      DISABLE_MAGIC_FUNCTIONS=true
-      export "MICRO_TRUECOLOR=1"
-    '';
+    initContent = lib.mkMerge [
+      (lib.mkBefore ''
+        DISABLE_MAGIC_FUNCTIONS=true
+        export "MICRO_TRUECOLOR=1"
+      '')
+      (lib.mkAfter ''
+        [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+      '')
+    ];
 
     plugins = [
       {
