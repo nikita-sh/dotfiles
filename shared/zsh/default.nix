@@ -3,12 +3,16 @@
   lib,
   system,
   hostname ? "",
-  env ? "",
   sessionVariables ? { },
+  p10k ? ./dot-p10k.zsh,
   ...
 }:
 {
+  home.file.".p10k.zsh".source = p10k;
+
   programs.zsh = {
+    inherit sessionVariables;
+
     enable = true;
     enableCompletion = true;
     autosuggestion.enable = true;
@@ -41,7 +45,6 @@
     initContent = lib.mkBefore ''
       DISABLE_MAGIC_FUNCTIONS=true
       export "MICRO_TRUECOLOR=1"
-      source ~/dev/dotfiles/shared/zsh/dot-p10k.zsh
     '';
 
     plugins = [

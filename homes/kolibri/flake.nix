@@ -33,6 +33,7 @@
         HYDRA_SSH_IDENTITY = "~/.ssh/id_ed25519";
         NIX_KEY = "~/nix-keys/nixos.private.pem";
       };
+      p10k = ./dot-p10k.zsh;
     in
     {
       homeConfigurations."nikita@kolibri" = home-manager.lib.homeManagerConfiguration {
@@ -40,16 +41,16 @@
 
         extraSpecialArgs = {
           inherit
-            system
-            hostname
             email
+            hostname
+            p10k
             sessionVariables
+            system
             ;
           inputs = inputs // shared.inputs;
         };
 
         modules = [
-          ../modules/kolibri.nix
           {
             home = {
               homeDirectory = "/home/nikita";
