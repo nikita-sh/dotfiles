@@ -14,13 +14,9 @@
     ssh.startAgent = true;
   };
 
-  users.defaultUserShell = pkgs.zsh;
-
-  users.users.nikita = {
-    isNormalUser = true;
-    home = "/home/nikita";
-    extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = [
+  users = {
+    defaultUserShell = pkgs.zsh;
+    users."nikita".openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHX+C38gUcqJapP8sfb3PA2ErQli67Nu02iWQm6+qmEu nikita@falke"
     ];
   };

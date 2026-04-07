@@ -25,6 +25,7 @@
           ../modules/software-workstation.nix
           ../modules/probe-rs.nix
           ../modules/vpn.nix
+          ../modules/user.nix
         ];
       };
     };

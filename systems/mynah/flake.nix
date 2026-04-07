@@ -32,6 +32,7 @@
           inputs.vscode-server.nixosModules.default
           nixos-wsl.nixosModules.wsl
           ./config.nix
+          ./user.nix
         ];
       };
     };

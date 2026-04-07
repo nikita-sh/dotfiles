@@ -17,7 +17,10 @@
       # Build darwin flake using:
       # $ darwin-rebuild build --flake .#simple
       darwinConfigurations."falke" = nix-darwin.lib.darwinSystem {
-        modules = [ ./config.nix ];
+        modules = [
+          ./config.nix
+          ./user.nix
+        ];
       };
 
       # Expose the package set, including overlays, for convenience.
