@@ -24,13 +24,19 @@
       system = "x86_64-linux";
       hostname = "mynah";
       email = "dev@nikitashko.com";
+      p10k = ./dot-p10k.zsh;
     in
     {
       homeConfigurations."nikita@${hostname}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
         extraSpecialArgs = {
-          inherit system hostname email;
+          inherit
+            email
+            hostname
+            p10k
+            system
+            ;
           inputs = inputs // shared.inputs;
         };
 

@@ -38,6 +38,7 @@
         HYDRA_SSH_IDENTITY = "~/.ssh/id_ed25519";
         NIX_KEY = "~/nix-keys/nixos.private.pem";
       };
+      p10k = ./dot-p10k.zsh;
     in
     {
       homeConfigurations."nikita@falke" = home-manager.lib.homeManagerConfiguration {
@@ -45,10 +46,11 @@
 
         extraSpecialArgs = {
           inherit
-            hostname
             email
-            system
+            hostname
+            p10k
             sessionVariables
+            system
             ;
           inputs = inputs // shared.inputs;
         };
