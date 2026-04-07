@@ -44,7 +44,12 @@
         inherit pkgs;
 
         extraSpecialArgs = {
-          inherit hostname email system;
+          inherit
+            hostname
+            email
+            system
+            sessionVariables
+            ;
           inputs = inputs // shared.inputs;
         };
 
