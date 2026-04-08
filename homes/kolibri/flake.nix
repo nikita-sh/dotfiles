@@ -31,7 +31,7 @@
         # HYDRA_X86_64_BUILDER = "nixbuild.vital.company";
         HYDRA_SSH_USER = "nikita";
         HYDRA_SSH_IDENTITY = "~/.ssh/id_ed25519";
-        NIX_KEY = "~/nix-keys/nixos.private.pem";
+        NIX_KEY = "~/nix-keys/kolibri.private.pem";
       };
       p10k = ./dot-p10k.zsh;
     in
