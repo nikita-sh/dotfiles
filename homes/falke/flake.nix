@@ -27,21 +27,23 @@
           nix-vscode-extensions.overlays.default
         ];
       };
+      username = "nikita";
       hostname = "falke";
       email = "nikita.shumeiko@vitalbio.com";
+      homeDirectory = "/Users/${username}";
       sessionVariables = {
         HYDRA_AARCH64_BUILDER = "hydra-aarch64.vital.company";
         HYDRA_X86_64_BUILDER = "hydra-x86-64.vital.company";
         # HYDRA_AARCH64_BUILDER = "nixbuild.vital.company";
         # HYDRA_X86_64_BUILDER = "nixbuild.vital.company";
-        HYDRA_SSH_USER = "nikita";
-        HYDRA_SSH_IDENTITY = "~/.ssh/id_ed25519";
-        NIX_KEY = "~/nix-keys/falke.private.pem";
+        HYDRA_SSH_USER = "${username}";
+        HYDRA_SSH_IDENTITY = "${homeDirectory + "/.ssh/id_ed25519"}";
+        NIX_KEY = "${homeDirectory + "/nix-keys/falke.private.pem"}";
       };
       p10k = ./dot-p10k.zsh;
     in
     {
-      homeConfigurations."nikita@falke" = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations."${username}@${hostname}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
         extraSpecialArgs = {
@@ -58,9 +60,8 @@
         modules = [
           {
             home = {
-              homeDirectory = "/Users/nikita";
+              inherit homeDirectory username;
               stateVersion = "24.05";
-              username = "nikita";
             };
           }
           (shared.homeManagerModules.bat)
