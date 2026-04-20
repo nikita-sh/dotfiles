@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ self, pkgs,... }:
 {
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
@@ -31,5 +31,8 @@
 
   programs.zsh.enable = true;
 
-  users.defaultUserShell = pkgs.zsh;
+  users.users.nikita = {
+    home = "/Users/nikita";
+    shell = pkgs.zsh;
+  };
 }

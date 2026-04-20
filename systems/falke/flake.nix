@@ -17,9 +17,9 @@
       # Build darwin flake using:
       # $ darwin-rebuild build --flake .#simple
       darwinConfigurations."falke" = nix-darwin.lib.darwinSystem {
+        specialArgs = { inherit self inputs; };
         modules = [
           ./config.nix
-          ./user.nix
         ];
       };
 
