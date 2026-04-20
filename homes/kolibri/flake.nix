@@ -44,6 +44,7 @@
         extraSpecialArgs = {
           inherit
             email
+            extraPackages
             hostname
             p10k
             sessionVariables
@@ -57,6 +58,9 @@
             home = {
               inherit homeDirectory username;
               stateVersion = "24.05";
+              my.extraPackages = with pkgs; [
+                strace
+              ];
             };
           }
           (shared.homeManagerModules.bat)
