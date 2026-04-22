@@ -22,7 +22,6 @@
         vscodevim.vim
         zxh404.vscode-proto3
         jdinhlife.gruvbox
-        catppuccin.catppuccin-vsc
         sainnhe.gruvbox-material
         ms-python.vscode-pylance
         raspberry-pi.raspberry-pi-pico
