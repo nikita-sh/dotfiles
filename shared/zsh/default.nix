@@ -96,7 +96,7 @@
       '';
       nixosrb =
         let
-          cmd = if system == "darwin" then "nix run nix-darwin" else "nixos-rebuild";
+          cmd = if system == "aarch64-darwin" then "nix run nix-darwin --" else "nixos-rebuild";
         in
         "sudo ${cmd} --flake ~/dev/dotfiles/systems/${hostname}#${hostname}";
 
