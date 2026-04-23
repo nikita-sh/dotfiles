@@ -1,4 +1,4 @@
-{ self, pkgs,... }:
+{ self, pkgs, ... }:
 {
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
@@ -30,6 +30,11 @@
   security.pam.services.sudo_local.touchIdAuth = true;
 
   programs.zsh.enable = true;
+
+  services = {
+    tailscale.enable = true;
+    openssh.enable = true;
+  };
 
   users.users.nikita = {
     home = "/Users/nikita";
