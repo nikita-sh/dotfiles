@@ -1,6 +1,6 @@
 vim.opt.backup = true -- Turn on regular backups
 vim.opt.backupdir = vim.fn.getenv("HOME") .. "/.local/share/nvim/backup"
-vim.opt.colorcolumn = "96"
+vim.opt.colorcolumn = "80,120"
 vim.opt.completeopt = "menu,menuone,noselect"
 vim.opt.cursorline = true        -- Highlight the current line
 vim.opt.expandtab = true         -- Use spaces not tabs
