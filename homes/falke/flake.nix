@@ -31,15 +31,6 @@
       hostname = "falke";
       email = "nikita.shumeiko@vitalbio.com";
       homeDirectory = "/Users/${username}";
-      sessionVariables = {
-        HYDRA_AARCH64_BUILDER = "hydra-aarch64.vital.company";
-        HYDRA_X86_64_BUILDER = "hydra-x86-64.vital.company";
-        # HYDRA_AARCH64_BUILDER = "nixbuild.vital.company";
-        # HYDRA_X86_64_BUILDER = "nixbuild.vital.company";
-        HYDRA_SSH_USER = "${username}";
-        HYDRA_SSH_IDENTITY = "${homeDirectory + "/.ssh/id_ed25519"}";
-        NIX_KEY = "${homeDirectory + "/nix-keys/falke.private.pem"}";
-      };
       p10k = ./dot-p10k.zsh;
     in
     {
@@ -51,7 +42,6 @@
             email
             hostname
             p10k
-            sessionVariables
             system
             ;
           inputs = inputs // shared.inputs;
@@ -62,6 +52,16 @@
             home = {
               inherit homeDirectory username;
               stateVersion = "24.05";
+            };
+
+            my.sessionVariables = {
+              HYDRA_AARCH64_BUILDER = "hydra-aarch64.vital.company";
+              HYDRA_X86_64_BUILDER = "hydra-x86-64.vital.company";
+              # HYDRA_AARCH64_BUILDER = "nixbuild.vital.company";
+              # HYDRA_X86_64_BUILDER = "nixbuild.vital.company";
+              HYDRA_SSH_USER = "${username}";
+              HYDRA_SSH_IDENTITY = "${homeDirectory + "/.ssh/id_ed25519"}";
+              NIX_KEY = "${homeDirectory + "/nix-keys/falke.private.pem"}";
             };
           }
           (shared.homeManagerModules.bat)

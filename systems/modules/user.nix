@@ -4,6 +4,6 @@
     isNormalUser = true;
     home = "/home/nikita";
     extraGroups = [ "wheel" ];
-    shell = pkgs.zsh; 
+    shell = pkgs.zsh;
   };
 }
