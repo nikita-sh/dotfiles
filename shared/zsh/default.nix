@@ -4,21 +4,28 @@
   config,
   system,
   hostname ? "",
-  p10k ? ./foo.zsh,
   ...
 }:
 {
-  options.my.sessionVariables = lib.mkOption {
-    type = lib.types.attrsOf lib.types.str;
-    default = { };
-    description = "Environment variables to be set in the session.";
+  options.my = {
+    sessionVariables = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = { };
+      description = "Environment variables to be set in the session.";
+    };
+
+    p10k = lib.mkOption {
+      type = lib.types.path;
+      default = ./dot-p10k.zsh;
+      description = "Path to the powerlevel10k configuration file.";
+    };
   };
 
   config = {
-    home.file.".p10k.zsh".source = p10k;
+    home.file.".p10k.zsh".source = config.my.p10k;
 
     programs.zsh = {
-      sessionVariables = config.my.sessionVariables;
+      inherit (config.my) sessionVariables;
 
       enable = true;
       enableCompletion = true;

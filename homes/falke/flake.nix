@@ -20,6 +20,10 @@
     }:
     let
       system = "aarch64-darwin";
+      username = "nikita";
+      hostname = "falke";
+      homeDirectory = "/Users/${username}";
+
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
@@ -27,11 +31,6 @@
           nix-vscode-extensions.overlays.default
         ];
       };
-      username = "nikita";
-      hostname = "falke";
-      email = "nikita.shumeiko@vitalbio.com";
-      homeDirectory = "/Users/${username}";
-      p10k = ./dot-p10k.zsh;
     in
     {
       homeConfigurations."${username}@${hostname}" = home-manager.lib.homeManagerConfiguration {
@@ -39,9 +38,7 @@
 
         extraSpecialArgs = {
           inherit
-            email
             hostname
-            p10k
             system
             ;
           inputs = inputs // shared.inputs;
@@ -54,15 +51,21 @@
               stateVersion = "24.05";
             };
 
-            my.sessionVariables = {
-              HYDRA_AARCH64_BUILDER = "hydra-aarch64.vital.company";
-              HYDRA_X86_64_BUILDER = "hydra-x86-64.vital.company";
-              # HYDRA_AARCH64_BUILDER = "nixbuild.vital.company";
-              # HYDRA_X86_64_BUILDER = "nixbuild.vital.company";
-              HYDRA_SSH_USER = "${username}";
-              HYDRA_SSH_IDENTITY = "${homeDirectory + "/.ssh/id_ed25519"}";
-              NIX_KEY = "${homeDirectory + "/nix-keys/falke.private.pem"}";
+            my = {
+              sessionVariables = {
+                HYDRA_AARCH64_BUILDER = "hydra-aarch64.vital.company";
+                HYDRA_X86_64_BUILDER = "hydra-x86-64.vital.company";
+                # HYDRA_AARCH64_BUILDER = "nixbuild.vital.company";
+                # HYDRA_X86_64_BUILDER = "nixbuild.vital.company";
+                HYDRA_SSH_USER = "${username}";
+                HYDRA_SSH_IDENTITY = "${homeDirectory + "/.ssh/id_ed25519"}";
+                NIX_KEY = "${homeDirectory + "/nix-keys/falke.private.pem"}";
+              };
+
+              email = "nikita.shumeiko@vitalbio.com";
+              p10k = ./dot-p10k.zsh;
             };
+
           }
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)

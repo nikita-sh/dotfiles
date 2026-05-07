@@ -7,7 +7,6 @@
     packages = [
       pkgs.neovim
       pkgs.tree-sitter
-      # pkgs.haskellPackages.fast-tags
     ];
 
     sessionVariables = {

@@ -23,8 +23,6 @@
       };
       system = "x86_64-linux";
       hostname = "mynah";
-      email = "dev@nikitashko.com";
-      p10k = ./dot-p10k.zsh;
     in
     {
       homeConfigurations."nikita@${hostname}" = home-manager.lib.homeManagerConfiguration {
@@ -32,9 +30,7 @@
 
         extraSpecialArgs = {
           inherit
-            email
             hostname
-            p10k
             system
             ;
           inputs = inputs // shared.inputs;
@@ -46,6 +42,10 @@
               homeDirectory = "/home/nikita";
               stateVersion = "24.05";
               username = "nikita";
+            };
+
+            my = {
+              p10k = ./dot-p10k.zsh;
             };
           }
           (shared.homeManagerModules.bat)

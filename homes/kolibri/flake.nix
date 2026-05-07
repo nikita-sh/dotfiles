@@ -18,15 +18,14 @@
     }:
     let
       system = "aarch64-linux";
+      username = "nikita";
+      hostname = "kolibri";
+      homeDirectory = "/home/${username}";
+
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
       };
-      username = "nikita";
-      hostname = "kolibri";
-      email = "nikita.shumeiko@vitalbio.com";
-      homeDirectory = "/home/${username}";
-      p10k = ./dot-p10k.zsh;
     in
     {
       homeConfigurations."${username}@${hostname}" = home-manager.lib.homeManagerConfiguration {
@@ -34,9 +33,7 @@
 
         extraSpecialArgs = {
           inherit
-            email
             hostname
-            p10k
             system
             ;
           inputs = inputs // shared.inputs;
@@ -63,6 +60,9 @@
                 HYDRA_SSH_IDENTITY = "${homeDirectory + "/.ssh/id_ed25519"}";
                 NIX_KEY = "${homeDirectory + "/nix-keys/kolibri.private.pem"}";
               };
+
+              p10k = ./dot-p10k.zsh;
+              email = "nikita.shumeiko@vitalbio.com";
             };
           }
           (shared.homeManagerModules.bat)
