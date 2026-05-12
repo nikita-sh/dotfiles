@@ -8,7 +8,14 @@
     dbus.enable = true;
     openssh.enable = true;
     tailscale.enable = true;
-    postgresql.enable = true;
+    postgresql = {
+      enable = true;
+      ensureUsers = [
+        {
+          name = "nikita";
+        }
+      ];
+    };
   };
 
   programs = {
