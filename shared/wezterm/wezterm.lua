@@ -14,7 +14,7 @@ config.initial_rows = 40
 -- Font Settings
 config.font = wezterm.font("FiraCode Nerd Font Mono")
 config.font_size = 12
-config.line_height = 1.2
+config.line_height = 1.0
 config.adjust_window_size_when_changing_font_size = false
 config.use_dead_keys = false
 config.enable_scroll_bar = true

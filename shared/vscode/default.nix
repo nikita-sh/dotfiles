@@ -66,7 +66,9 @@
         "rust-analyzer.cargo.targetDir" = true;
         "rust-analyzer.check.command" = "check";
         "extensions.verifySignature" = false;
-        "github.copilot.enable" = false;
+        "github.copilot.enable" = {
+          "*" = false;
+        };
       };
     };
   };
