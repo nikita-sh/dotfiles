@@ -28,10 +28,15 @@
         "editor.fontFamily" = "'FiraCode Nerd Font', Menlo, Monaco, 'Courier New', monospace";
         "editor.fontSize" = 13;
         "editor.fontLigatures" = true;
+        "editor.rulers" = [
+          80
+          120
+        ];
         "git.openRepositoryInParentFolders" = "always";
         "window.titleBarStyle" = "custom";
         "workbench.colorTheme" = "Gruvbox Dark Hard";
         "files.insertFinalNewline" = true;
+        "files.trimTrailingWhitespace" = true;
         "files.watcherExclude" = {
           "**/.git/objects/**" = true;
           "**/.git/subtree-cache/**" = true;
@@ -68,6 +73,10 @@
         "extensions.verifySignature" = false;
         "github.copilot.enable" = {
           "*" = false;
+        };
+        "[Haskell]" = {
+          "editor.tabSize" = 2;
+          "editor.insertSpaces" = true;
         };
       };
     };
