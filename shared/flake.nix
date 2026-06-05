@@ -45,6 +45,7 @@
         ./vscode
         ./vscode-server
         ./wezterm
+        ./zed
         ./zsh
       ];
     };

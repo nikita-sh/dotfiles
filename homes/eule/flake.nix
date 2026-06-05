@@ -6,6 +6,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+    neru.url = "github:y3owk1n/neru";
     shared.url = "path:../../shared";
   };
 
@@ -15,6 +16,7 @@
       home-manager,
       nixpkgs,
       nix-vscode-extensions,
+      neru,
       shared,
       ...
     }:
@@ -56,6 +58,24 @@
               p10k = ./dot-p10k.zsh;
             };
 
+          }
+          neru.homeManagerModules.default
+          {
+            nixpkgs.overlays = [ neru.overlays.default ];
+
+            # TODO: move to separate module
+            services.neru = {
+              enable = true;
+              config = ''
+                [general]
+                excluded_apps = ["com.github.wez.wezterm"]
+
+                [recursive_grid]
+                grid_cols = 3 
+                grid_rows = 3
+                keys = "rtyfghvbn"
+              '';
+            };
           }
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)

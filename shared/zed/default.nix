@@ -2,8 +2,13 @@
 {
   programs.zed-editor = {
     enable = true;
-    extraPackages = [
-      "grubox-ish"
+
+    extensions = [
+      "nix"
+      "toml"
+      "haskell"
+      "make"
+      "gruvbox-ish"
     ];
 
     userSettings = {
@@ -20,6 +25,15 @@
       load_direnv = "shell_hook";
       base_keymap = "VSCode";
       vim_mode = true;
+
+      ui_font_size = 13;
+      buffer_font_size = 13;
+      show_whitespaces = "all";
+
+      wrap_guides = [
+        80
+        100
+      ];
 
       terminal = {
         copy_on_select = false;
@@ -46,6 +60,13 @@
         nix = {
           binary = {
             path_lookup = true;
+          };
+        };
+
+        haskell = {
+          binary = {
+            path = "static-ls";
+            arguments = [ "--experimentalFeatures" ];
           };
         };
       };

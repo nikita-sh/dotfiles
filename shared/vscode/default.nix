@@ -74,7 +74,7 @@
         "github.copilot.enable" = {
           "*" = false;
         };
-        "[Haskell]" = {
+        "[haskell]" = {
           "editor.tabSize" = 2;
           "editor.insertSpaces" = true;
         };
