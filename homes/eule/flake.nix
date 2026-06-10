@@ -8,6 +8,7 @@
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     neru.url = "github:y3owk1n/neru";
     shared.url = "path:../../shared";
+    claude-code.url = "github:sadjow/claude-code-nix";
   };
 
   outputs =
@@ -18,6 +19,7 @@
       nix-vscode-extensions,
       neru,
       shared,
+      claude-code,
       ...
     }:
     let
@@ -31,6 +33,7 @@
         config.allowUnfree = true;
         overlays = [
           nix-vscode-extensions.overlays.default
+          claude-code.overlays.default
         ];
       };
     in
@@ -77,9 +80,12 @@
               '';
             };
           }
+          {
+            home.packages = [ pkgs.claude-code ];
+          }
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)
-          (shared.homeManagerModules.claude)
+          # (shared.homeManagerModules.claude)
           (shared.homeManagerModules.direnv)
           (shared.homeManagerModules.git)
           (shared.homeManagerModules.home-manager)
