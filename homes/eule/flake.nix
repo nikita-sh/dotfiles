@@ -9,6 +9,10 @@
     neru.url = "github:y3owk1n/neru";
     shared.url = "path:../../shared";
     claude-code.url = "github:sadjow/claude-code-nix";
+    # Deliberately no nixpkgs.follows: its pkgsStatic/crane build is tested
+    # against its own locked inputs, and matching them is what makes garnix
+    # cache hits possible.
+    bootstrap-mercury.url = "git+ssh://git@github.com/MercuryTechnologies/bootstrap-mercury.git";
   };
 
   outputs =
@@ -80,12 +84,10 @@
               '';
             };
           }
-          {
-            home.packages = [ pkgs.claude-code ];
-          }
+          ./mercury.nix
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)
-          # (shared.homeManagerModules.claude)
+          (shared.homeManagerModules.claude)
           (shared.homeManagerModules.direnv)
           (shared.homeManagerModules.git)
           (shared.homeManagerModules.home-manager)
