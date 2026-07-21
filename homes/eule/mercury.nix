@@ -21,8 +21,16 @@
 
     # home-manager only writes ~/.zprofile when profileExtra is set; claiming
     # it here keeps bootstrap-mercury (and anything else) from owning it.
+    #
+    # The nix sourcing can't live in /etc: macOS updates strip the installer's
+    # hook from /etc/zshrc, the Determinate /etc/zshenv hook only fires for
+    # SSH sessions, and nix-darwin is not active on this machine. Sourcing it
+    # after brew keeps nix ahead of Homebrew in PATH.
     profileExtra = ''
       [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+      if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+        . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+      fi
     '';
   };
 }
