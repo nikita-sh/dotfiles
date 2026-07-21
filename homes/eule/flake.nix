@@ -6,7 +6,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
-    neru.url = "github:y3owk1n/neru";
+    # neru.url = "github:y3owk1n/neru";
     shared.url = "path:../../shared";
     claude-code.url = "github:sadjow/claude-code-nix";
     # Deliberately no nixpkgs.follows: its pkgsStatic/crane build is tested
@@ -21,7 +21,7 @@
       home-manager,
       nixpkgs,
       nix-vscode-extensions,
-      neru,
+      # neru,
       shared,
       claude-code,
       ...
@@ -66,24 +66,24 @@
             };
 
           }
-          neru.homeManagerModules.default
-          {
-            nixpkgs.overlays = [ neru.overlays.default ];
+          # neru.homeManagerModules.default
+          # {
+          #   nixpkgs.overlays = [ neru.overlays.default ];
 
-            # TODO: move to separate module
-            services.neru = {
-              enable = true;
-              config = ''
-                [general]
-                excluded_apps = ["com.github.wez.wezterm"]
+          #   # TODO: move to separate module
+          #   services.neru = {
+          #     enable = true;
+          #     config = ''
+          #       [general]
+          #       excluded_apps = ["com.github.wez.wezterm"]
 
-                [recursive_grid]
-                grid_cols = 3 
-                grid_rows = 3
-                keys = "rtyfghvbn"
-              '';
-            };
-          }
+          #       [recursive_grid]
+          #       grid_cols = 3
+          #       grid_rows = 3
+          #       keys = "rtyfghvbn"
+          #     '';
+          #   };
+          # }
           ./mercury.nix
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)
