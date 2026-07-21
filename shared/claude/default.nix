@@ -35,8 +35,8 @@ in
     hooksDir = optionalDir ./hooks;
 
     settings = {
-      model = "claude-fable-5[1m]";
-      effortLevel = "xhigh";
+      model = "claude-opus-4-8[1m]";
+      effortLevel = "high";
       theme = "dark-ansi";
       skipWorkflowUsageWarning = true;
 
