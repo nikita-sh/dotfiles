@@ -13,6 +13,46 @@ let
   };
 
   optionalDir = dir: if builtins.pathExists dir then dir else null;
+
+  # Policy + store-path keys: nix always wins, refreshed every rebuild.
+  managedSettings = {
+    "$schema" = "https://json.schemastore.org/claude-code-settings.json";
+    skipWorkflowUsageWarning = true;
+    permissions = {
+      defaultMode = "acceptEdits";
+      # Bare "Bash" auto-approves every shell command; the dcg PreToolUse hook
+      # stays in front as the destructive-command guard (hook denials override
+      # permission allows).
+      allow = [ "Bash" ];
+    };
+    statusLine = {
+      type = "command";
+      command = lib.getExe statusline;
+    };
+    hooks.PreToolUse = [
+      {
+        matcher = "Bash";
+        hooks = [
+          {
+            type = "command";
+            command = lib.getExe dcg;
+          }
+        ];
+      }
+    ];
+  };
+
+  # Seeded on first run; Claude may overwrite these at runtime (/effort, /model,
+  # /config) and the overwrite survives rebuilds via the activation merge below.
+  defaultSettings = {
+    model = "claude-opus-4-8[1m]";
+    effortLevel = "high";
+    theme = "dark-ansi";
+  };
+
+  jsonFmt = pkgs.formats.json { };
+  managedJson = jsonFmt.generate "claude-managed.json" managedSettings;
+  defaultsJson = jsonFmt.generate "claude-defaults.json" defaultSettings;
 in
 {
   home.packages = [
@@ -34,36 +74,28 @@ in
     commandsDir = optionalDir ./commands;
     hooksDir = optionalDir ./hooks;
 
-    settings = {
-      model = "claude-opus-4-8[1m]";
-      effortLevel = "high";
-      theme = "dark-ansi";
-      skipWorkflowUsageWarning = true;
-
-      permissions = {
-        defaultMode = "acceptEdits";
-        # Bare "Bash" auto-approves every shell command; the dcg PreToolUse
-        # hook below stays in front of them as the destructive-command guard
-        # (hook denials override permission allows).
-        allow = [ "Bash" ];
-      };
-
-      statusLine = {
-        type = "command";
-        command = lib.getExe statusline;
-      };
-
-      hooks.PreToolUse = [
-        {
-          matcher = "Bash";
-          hooks = [
-            {
-              type = "command";
-              command = lib.getExe dcg;
-            }
-          ];
-        }
-      ];
-    };
+    # settings.json is written by the activation script below, not the module.
+    # The module would symlink it into the read-only store, which breaks runtime
+    # writes like /effort (Claude writes a .tmp next to the resolved symlink
+    # target and renames -> EACCES in /nix/store). Leaving this empty skips the
+    # symlink; the activation merge produces a real, writable file instead.
+    settings = { };
   };
+
+  # Merge nix-managed keys over Claude's own settings.json on every switch:
+  # defaults (seed) < existing runtime values (preserve /effort etc.) <
+  # managed keys (always refresh store paths). jq `*` merges objects and
+  # replaces arrays, so permissions.allow and hooks come wholesale from managed.
+  home.activation.claudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p "$HOME/.claude"
+    # Was a store symlink under the old scheme; drop it so we can write a real file.
+    [ -L "$HOME/.claude/settings.json" ] && run rm -f "$HOME/.claude/settings.json"
+    existing="$(cat "$HOME/.claude/settings.json" 2>/dev/null || echo '{}')"
+    printf '%s' "$existing" \
+      | ${pkgs.jq}/bin/jq -S \
+          --slurpfile d ${defaultsJson} \
+          --slurpfile m ${managedJson} \
+          '$d[0] * . * $m[0]' > "$HOME/.claude/settings.json.tmp"
+    run mv "$HOME/.claude/settings.json.tmp" "$HOME/.claude/settings.json"
+  '';
 }
