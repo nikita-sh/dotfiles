@@ -38,6 +38,7 @@
         ./direnv
         ./git
         ./home-manager
+        ./jj
         ./lsd
         ./nvim
         ./packages
