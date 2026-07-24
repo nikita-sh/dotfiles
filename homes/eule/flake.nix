@@ -91,11 +91,12 @@
           (shared.homeManagerModules.direnv)
           (shared.homeManagerModules.git)
           (shared.homeManagerModules.home-manager)
+          (shared.homeManagerModules.jj)
+          (shared.homeManagerModules.lsd)
           (shared.homeManagerModules.nvim)
           (shared.homeManagerModules.packages)
           (shared.homeManagerModules.tmux)
           (shared.homeManagerModules.vscode)
-          (shared.homeManagerModules.lsd)
           (shared.homeManagerModules.wezterm)
           (shared.homeManagerModules.zsh)
         ];
