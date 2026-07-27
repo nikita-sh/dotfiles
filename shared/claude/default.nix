@@ -45,8 +45,8 @@ let
   # Seeded on first run; Claude may overwrite these at runtime (/effort, /model,
   # /config) and the overwrite survives rebuilds via the activation merge below.
   defaultSettings = {
-    model = "claude-opus-4-8[1m]";
-    effortLevel = "high";
+    model = "claude-opus-5[1m]";
+    effortLevel = "med";
     theme = "dark-ansi";
   };
 
