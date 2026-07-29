@@ -161,6 +161,16 @@
         gcpc = "git cherry-pick --continue";
         gcpa = "git cherry-pick --abort";
         grbias = "git rebase -i --autosquash";
+        # worktree stuff
+        gwt = "git worktree";
+        gwta = "git worktree add";
+        gwtl = "git worktree list";
+        gwtr = "git worktree remove";
+        gwtm = "git worktree move";
+        gwtrp = "git worktree repair";
+        gwtlk = "git worktree lock";
+        gwtulk = "git worktree unlock";
+        gwtp = "git worktree prune";
 
         # fw
         pbrun-atsam18 = "sudo probe-rs run --chip ATSAMD51J18A";
