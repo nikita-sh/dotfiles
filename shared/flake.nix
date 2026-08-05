@@ -40,6 +40,7 @@
         ./home-manager
         ./jj
         ./lsd
+        ./meat
         ./nvim
         ./packages
         ./tmux

@@ -8,7 +8,7 @@
         vscodevim.vim
         eamodio.gitlens
         github.vscode-pull-request-github
-        haskell.haskell
+        # haskell.haskell
         jnoortheen.nix-ide
         mechatroner.rainbow-csv
         mhutchie.git-graph

@@ -93,6 +93,7 @@
           (shared.homeManagerModules.home-manager)
           (shared.homeManagerModules.jj)
           (shared.homeManagerModules.lsd)
+          (shared.homeManagerModules.meat)
           (shared.homeManagerModules.nvim)
           (shared.homeManagerModules.packages)
           (shared.homeManagerModules.tmux)
