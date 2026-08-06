@@ -1,6 +1,6 @@
 ---
 name: review-feedback
-description: Triage code-review feedback item by item — verify each claim against the code, give a verdict with reasoning, then plan the subset worth doing. Use when the user hands over review comments, pasted or by link, and asks what you think of them or for a plan to address them.
+description: Triage code-review feedback item by item — restate each claim in plain words, verify it against the code, give a verdict with reasoning, then plan the subset worth doing. Use whenever feedback or a critique arrives, pasted or by link, however it is phrased — "what's the solution to this feedback", "how can we fix this", "please fix this", "plan a solution to the following", "this feedback doesn't make sense", "put this in simpler words", or a bare pasted reviewer comment with no question at all.
 ---
 
 # Triaging review feedback
@@ -30,6 +30,14 @@ Number the items and hand back verdicts first. The user replies by picking a sub
 Read the cited `file:line` and the surrounding code. Reviewers describe code that has since changed, misread which module owns something, and assert invariants that the types do not actually enforce. Check the claim, not the confidence of the claim.
 
 When the claim is about something the code cannot show on its own — whether a migration is needed, whether a field is used by a consumer outside the repo, whether a duplicated query predates the change — say what you checked, what you could not check, and what would settle it. Do not resolve it by guessing.
+
+## Restate before verifying
+
+Lead each item with one sentence in plain words: what the reviewer says is wrong, and what they say goes wrong because of it. Reviewer prose compresses a chain of reasoning into dense clauses, and the item cannot be judged — or argued with — until that chain is spelled out.
+
+Name the concrete failure the item implies: which call, with which input, producing which wrong result. An item you cannot restate that way is either not a defect or not yet understood, and saying which is itself the verdict.
+
+Keep the reviewer's own file and symbol names in the restatement. Paraphrasing them away makes the item hard to match back against the original comment when replying to the reviewer.
 
 ## Verdicts
 
