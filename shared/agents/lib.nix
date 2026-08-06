@@ -64,7 +64,7 @@
       render = part: if lib.isPath part then builtins.readFile part else part;
       rendered = lib.filter (s: s != "") (map render parts);
     in
-    pkgs.writeText "${name}-instructions.md" (lib.concatStringsSep "\n\n" rendered);
+    pkgs.writeText "${name}-instructions.md" (lib.concatStringsSep "\n\n---\n\n" rendered);
 
   # For settings files the agent rewrites at runtime. A store symlink cannot be
   # used: the agent writes a temporary file next to the resolved symlink target
