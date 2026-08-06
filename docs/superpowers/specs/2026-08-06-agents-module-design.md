@@ -8,7 +8,9 @@ Replaces `shared/claude/` with `shared/agents/`, a home-manager module that conf
 
 ## Scope of abstraction
 
-The shared layer owns instruction text, the skills source, and normalized model knobs. It does not own approval policy or guard hooks. A Claude Code `PreToolUse` hook, a Codex `prefix_rule`, and a Prime Agent JS extension express different things, and a normalized policy option would have to be lossy in a way that hides which harness is actually guarded. Those stay harness-specific.
+The shared layer owns instruction text, the skills source, normalized model knobs, and the destructive-command guard. It does not own approval policy. Auto-approval settings differ enough between harnesses that a normalized option would hide which harness actually approves what, so those stay in each harness's raw settings.
+
+The guard is shared because dcg supports all three harnesses directly. The rendering differs per harness, but the decision being enforced is the same binary and the same rule set, so a single `guard.enable` is honest rather than lossy.
 
 ## Capability differences
 
@@ -19,10 +21,12 @@ The shared layer owns instruction text, the skills source, and normalized model 
 | settings file | `settings.json`, rewritten by the CLI at runtime | `config.toml`, static | `~/.prime/agent/settings.json`, rewritten by the CLI at runtime |
 | model key | `model` | `model` | `defaultModel` |
 | reasoning key | `effortLevel` | `model_reasoning_effort` | `defaultThinkingLevel` |
-| command guard | `PreToolUse` hook | `rules` | JS extension API |
+| dcg guard mechanism | `PreToolUse` hook in `settings.json` | `PreToolUse` hook in `~/.codex/hooks.json` | TypeScript extension in `~/.prime/agent/extensions/` |
 | statusline, subagent definitions | yes | no | no |
 
 All three implement the Agent Skills standard, so a single skills directory serves all of them.
+
+Prime Agent is a distribution of `earendil-works/pi`; its dependencies are `@earendil-works/pi-core`, `pi-ai`, and `pi-tui`. That matters because dcg documents a Pi integration, which is what makes the guard reachable on the third harness.
 
 Claude Code and Codex have upstream home-manager modules (`programs.claude-code`, `programs.codex`). Prime Agent has none, so its files are written directly.
 
@@ -34,13 +38,15 @@ shared/agents/
   lib.nix                        mkMutableSettings, mkInstructions
   instructions.md                harness-neutral instruction body
   skills/                        single skills source for all harnesses
+  guard/
+    dcg.nix                      the dcg binary, shared by every harness
+    prime-agent-extension.ts     tool_call handler that shells out to dcg
   pkgs/prime-agent.nix
   harnesses/
     claude-code.nix
     claude-code/
       instructions.md
       agents/                    reader.md, verifier.md
-      dcg.nix
       statusline-command.sh
       claude-code-log.nix
     codex.nix
@@ -59,6 +65,7 @@ Assets that only Claude Code can consume live under `harnesses/claude-code/` rat
 my.agents = {
   instructions = ./instructions.md;
   skillsDir = ./skills;
+  guard.enable = true;
 
   harnesses.claude-code = {
     enable = true;
@@ -87,13 +94,36 @@ my.agents = {
 
 Each `harnesses/<name>.nix` reads `config.my.agents.harnesses.<name>` and produces native configuration under `lib.mkIf cfg.enable`. Normalized values are translated through a per-harness lookup table, so a `reasoningEffort` a harness cannot express fails during evaluation rather than being dropped.
 
+Alongside `harnesses` sits `guard`:
+
+| Option | Type | Meaning |
+|---|---|---|
+| `guard.enable` | bool | Wire the destructive-command guard into every enabled harness. |
+| `guard.package` | package | Defaults to the dcg derivation in `guard/dcg.nix`. |
+
+The guard applies uniformly to whichever harnesses are enabled. There is no per-harness opt-out until something needs one.
+
 ## Shared helpers
 
-`mkMutableSettings { path, defaults, managed }` generates the activation-script merge that `shared/claude/default.nix` currently performs inline: seed defaults, preserve whatever the CLI wrote at runtime, then overwrite the nix-managed keys. The merge is `jq -S '$defaults * . * $managed'`, which merges objects and replaces arrays. A store symlink cannot be used for these files because the CLI writes a temporary file next to the resolved symlink target and renames it, which fails inside the store. Claude Code and Prime Agent both need this. Codex writes a static TOML file and does not.
+`mkMutableSettings { path, defaults, managed }` generates the activation-script merge that `shared/claude/default.nix` currently performs inline: seed defaults, preserve whatever the CLI wrote at runtime, then overwrite the nix-managed keys. The merge is `jq -S '$defaults * . * $managed'`, which merges objects and replaces arrays. A store symlink cannot be used for these files because the CLI writes a temporary file next to the resolved symlink target and renames it, which fails inside the store. Claude Code and Prime Agent both need this for their `settings.json`. Codex's `config.toml` is static and does not, but its `hooks.json` is written through the same helper so that hook entries from other sources survive.
 
 `mkInstructions harness` concatenates the shared instruction body, the harness's own `instructions.md`, and its `extraInstructions` into one store path, used as `CLAUDE.md` or `AGENTS.md`.
 
 Skills need no helper. The single `shared/agents/skills` source is linked to `~/.agents/skills`, which Codex from 0.94 and Prime Agent both read, and is passed to `programs.claude-code.skillsDir`.
+
+## Destructive-command guard
+
+One dcg derivation is built and placed on `PATH` once. Each harness wires it in the way that harness supports.
+
+**Claude Code** keeps what it has today: a `PreToolUse` hook with a `Bash` matcher in the managed half of `settings.json`, invoking the dcg store path.
+
+**Codex** gets a `PreToolUse` hook with a `Bash` matcher in `~/.codex/hooks.json`. dcg treats Codex as a first-class target from Codex 0.125.0, and nixpkgs currently has 0.146.0. Codex's hook input resembles Claude Code's but its parser rejects unknown fields, so dcg identifies Codex payloads by the non-empty `turn_id` field and emits only Codex's documented denial fields. The home-manager `programs.codex` module manages `config.toml` and `rules` but not `hooks.json`, so that file is written by this module using `mkMutableSettings` rather than a store symlink, which leaves any hook entries Codex or another installer added in place.
+
+**Prime Agent** gets a generated `~/.prime/agent/extensions/dcg.ts`, following dcg's published Pi recipe. The extension registers a `tool_call` handler, which runs before the tool executes and denies by returning `{ block: true, reason }`. It shells out to `dcg --robot test "<command>"`, where exit 0 means allow, exit 1 means deny with a JSON payload carrying the reason, and exit 3 or above means dcg itself failed. A dcg failure fails open, matching the posture of dcg's other integrations, so a broken install cannot wedge the agent. The extension is a static store symlink with the dcg store path baked in, since nothing writes to it at runtime.
+
+### Guard caveats
+
+Codex requires opening its `/hooks` interface once to trust the hook, which is a manual step no nix rebuild can perform. Codex's `PreToolUse` also does not intercept every `unified_exec` shell path, and in all three harnesses the model can still write a script to disk and run that. The guard is a guardrail, not an enforcement boundary.
 
 ## Instruction content
 
@@ -126,6 +156,8 @@ Claude Code is ported with no behavior change: the same managed settings, the sa
 - `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, and `~/.prime/agent/AGENTS.md` each contain the shared instruction body followed by their harness-specific section.
 - `~/.agents/skills` and `~/.claude/skills` both resolve to the same skills source.
 - `~/.codex/config.toml` and `~/.prime/agent/settings.json` are written with the normalized model and reasoning values.
+- `~/.codex/hooks.json` contains the dcg `PreToolUse` hook, and `~/.prime/agent/extensions/dcg.ts` exists with the dcg store path baked in.
+- A destructive command is denied through each path: piping a Claude-shaped payload to `dcg` returns a deny decision, piping a Codex-shaped payload with a non-empty `turn_id` returns Codex's documented deny fields, and `dcg --robot test "<destructive command>"` exits 1.
 - `prime-agent --version` runs from the store and reports 0.7.0.
 - `nix build ./shared#prime-agent` succeeds.
 - `shared/claude/` is gone and no flake references `shared.homeManagerModules.claude`.
@@ -133,3 +165,5 @@ Claude Code is ported with no behavior change: the same managed settings, the sa
 ## Open item for implementation
 
 The accepted values for Claude Code's `effortLevel` are not confirmed beyond the `"med"` currently in `settings.json`. The mapping from the normalized `reasoningEffort` enum needs to be checked against the harness before the lookup table is written.
+
+The exact `~/.codex/hooks.json` shape and whether Codex 0.146.0 still needs the `codex_hooks` feature flag in `config.toml` come from dcg's documentation and secondary sources rather than from Codex's own reference, which does not document the file. Running dcg's installer against a scratch `CODEX_HOME` and reading the file it produces is the way to settle both before writing the nix rendering.
