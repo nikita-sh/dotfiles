@@ -85,9 +85,9 @@
           #   };
           # }
           ./mercury.nix
+          (shared.homeManagerModules.agents)
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)
-          (shared.homeManagerModules.claude)
           (shared.homeManagerModules.direnv)
           (shared.homeManagerModules.git)
           (shared.homeManagerModules.home-manager)

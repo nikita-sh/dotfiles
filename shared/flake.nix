@@ -31,9 +31,9 @@
       inherit inputs;
 
       homeManagerModules = transformModulePaths [
+        ./agents
         ./bat
         ./btop
-        ./claude
         ./cliamp
         ./direnv
         ./git
