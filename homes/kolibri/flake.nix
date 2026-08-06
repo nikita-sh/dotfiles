@@ -64,6 +64,10 @@
               p10k = ./dot-p10k.zsh;
               email = "nikita.shumeiko@vitalbio.com";
             };
+
+            my.agents.harnesses.claude-code = {
+              enable = true;
+            };
           }
           (shared.homeManagerModules.agents)
           (shared.homeManagerModules.bat)

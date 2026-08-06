@@ -394,8 +394,6 @@ in
 {
   imports = [ ./harnesses/claude-code.nix ];
 
-  _module.args.agentsLib = agentsLib;
-
   options.my.agents = {
     instructions = lib.mkOption {
       type = lib.types.either lib.types.lines lib.types.path;
@@ -429,6 +427,10 @@ in
   };
 
   config = {
+    # Nested under config, not top level: the module system rejects a bare
+    # `_module` attribute in a module that also has an explicit `config` block.
+    _module.args.agentsLib = agentsLib;
+
     # On PATH for manual testing: `echo '{"tool_name":...}' | dcg`
     home.packages = lib.optional cfg.guard.enable cfg.guard.package;
   };

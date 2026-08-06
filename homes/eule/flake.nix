@@ -65,6 +65,13 @@
               p10k = ./dot-p10k.zsh;
             };
 
+            my.agents.harnesses.claude-code = {
+              enable = true;
+              model = "claude-opus-5[1m]";
+              reasoningEffort = "medium";
+              theme = "dark-ansi";
+            };
+
           }
           # neru.homeManagerModules.default
           # {
