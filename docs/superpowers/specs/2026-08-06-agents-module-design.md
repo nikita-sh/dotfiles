@@ -117,7 +117,7 @@ One dcg derivation is built and placed on `PATH` once. Each harness wires it in 
 
 **Claude Code** keeps what it has today: a `PreToolUse` hook with a `Bash` matcher in the managed half of `settings.json`, invoking the dcg store path.
 
-**Codex** gets a `PreToolUse` hook with a `Bash` matcher in `~/.codex/hooks.json`. dcg treats Codex as a first-class target from Codex 0.125.0, and nixpkgs currently has 0.146.0. Codex's hook input resembles Claude Code's but its parser rejects unknown fields, so dcg identifies Codex payloads by the non-empty `turn_id` field and emits only Codex's documented denial fields. The home-manager `programs.codex` module manages `config.toml` and `rules` but not `hooks.json`, so that file is written by this module using `mkMutableSettings` rather than a store symlink, which leaves any hook entries Codex or another installer added in place.
+**Codex** gets a `PreToolUse` hook with a `Bash` matcher in `~/.codex/hooks.json`. dcg treats Codex as a first-class target from Codex 0.125.0. The pinned `release-25.11` nixpkgs has Codex 0.92.0, which is below that floor and also below the 0.94.0 needed for `~/.agents/skills`, so Codex is taken from the `nixpkgs-unstable` input that `shared/flake.nix` already declares, where it is 0.146.0. Codex's hook input resembles Claude Code's but its parser rejects unknown fields, so dcg identifies Codex payloads by the non-empty `turn_id` field and emits only Codex's documented denial fields. The home-manager `programs.codex` module manages `config.toml` and `rules` but not `hooks.json`, so that file is written by this module using `mkMutableSettings` rather than a store symlink, which leaves any hook entries Codex or another installer added in place.
 
 **Prime Agent** gets a generated `~/.prime/agent/extensions/dcg.ts`, following dcg's published Pi recipe. The extension registers a `tool_call` handler, which runs before the tool executes and denies by returning `{ block: true, reason }`. It shells out to `dcg --robot test "<command>"`, where exit 0 means allow, exit 1 means deny with a JSON payload carrying the reason, and exit 3 or above means dcg itself failed. A dcg failure fails open, matching the posture of dcg's other integrations, so a broken install cannot wedge the agent. The extension is a static store symlink with the dcg store path baked in, since nothing writes to it at runtime.
 
@@ -164,6 +164,8 @@ Claude Code is ported with no behavior change: the same managed settings, the sa
 
 ## Open item for implementation
 
-The accepted values for Claude Code's `effortLevel` are not confirmed beyond the `"med"` currently in `settings.json`. The mapping from the normalized `reasoningEffort` enum needs to be checked against the harness before the lookup table is written.
+Both items are settled.
 
-The exact `~/.codex/hooks.json` shape and whether Codex 0.146.0 still needs the `codex_hooks` feature flag in `config.toml` come from dcg's documentation and secondary sources rather than from Codex's own reference, which does not document the file. Running dcg's installer against a scratch `CODEX_HOME` and reading the file it produces is the way to settle both before writing the nix rendering.
+Claude Code's `effortLevel` accepts `low`, `medium`, `high`, and `xhigh`. The `"med"` currently seeded in `shared/claude/default.nix` is not a valid value; the live `settings.json` reads `"medium"` because Claude rewrote it at runtime. The normalized `off` and `minimal` have no Claude Code equivalent and throw during evaluation.
+
+The Codex hook entry is byte-identical to the Claude Code one: an object with a `Bash` matcher wrapping a `command` hook. The `codex_hooks` feature has been default-enabled since 0.125.0, so no flag is needed. `~/.codex/hooks.json` already exists on `eule` with a hook pointing at a non-nix dcg under `~/.local/bin`, which the managed merge replaces with the store path.
