@@ -11,7 +11,7 @@ The full set is far too large to read directly (a few weeks of sessions is hundr
 
 ## Extraction
 
-Write extraction commands to a script file under `/tmp/claude/` and run the file. Passing a multi-line `jq` program inline through the Bash tool fails: the newlines are rejected as control characters.
+Write extraction commands to a script file under `/tmp/agent/` and run the file. Passing a multi-line `jq` program inline through the Bash tool fails: the newlines are rejected as control characters.
 
 Pick the window from the user's request and list the top-level transcripts:
 

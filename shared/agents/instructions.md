@@ -25,7 +25,7 @@
 
 - When a command can take content on stdin (PR bodies, comments, etc.), pipe it directly instead of staging a temp file — e.g. `gh pr edit <n> --body-file - <<'EOF' … EOF`. After publishing, read back the live target (e.g. `gh pr view --json body`) to confirm the intended content landed.
 
-- When writing to `/tmp`, write to `/tmp/claude`
+- When writing to `/tmp`, write to `/tmp/agent`
 
 - If you genuinely need a temp file, first check whether the path is already taken (e.g. `ls`/`test -e`); pick a different name if it is. Never blind-write a reused path via shell `>`: my shell has `noclobber` set, so `>` silently fails when the file exists and a later command then uses whatever STALE content was left there.
 
@@ -93,7 +93,7 @@ NEVER fabricate statistics, data points, or claims not explicitly present in sou
 
 **Maintain a source map.** Track every factual claim, metric, name, or date back to its source. Present the draft clean (no inline tags), with a "Source Map" appendix listing each claim and its origin (document name, section/heading).
 
-**Verify before delivering.** For substantive documents (strategy docs, external-facing reports, review comments, posts, presentations), spawn a verification agent (Opus — no weaker model) that re-reads each source and checks every claim in the source map. Mark any unverifiable claim as [UNVERIFIED].
+**Verify before delivering.** For substantive documents (strategy docs, external-facing reports, review comments, posts, presentations), spawn a verification agent (a top-tier model — no weaker model) that re-reads each source and checks every claim in the source map. Mark any unverifiable claim as [UNVERIFIED].
 
 **Separate verified from unverified.** Present the clean draft with unverified claims removed, plus a separate list of removed claims so I can decide whether to add them back with proper sourcing.
 
