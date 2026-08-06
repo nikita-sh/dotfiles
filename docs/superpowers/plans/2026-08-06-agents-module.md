@@ -47,7 +47,7 @@ Working on `eule` is assumed. For a different host, substitute the hostname in b
 | `shared/agents/pkgs/prime-agent.nix` | Prime Agent derivation. |
 | `shared/agents/harnesses/claude-code.nix` | Renders `programs.claude-code` plus the managed `settings.json` merge. |
 | `shared/agents/harnesses/claude-code/` | `instructions.md`, `agents/`, `statusline-command.sh`, `claude-code-log.nix`. |
-| `shared/agents/harnesses/codex.nix` | Renders `programs.codex` plus the `hooks.json` merge. |
+| `shared/agents/harnesses/codex.nix` | Renders `programs.codex` plus the `hooks.json` merge. Codex reads the shared skills through the `~/.agents/skills` link `default.nix` creates, so this module says nothing about skills. |
 | `shared/agents/harnesses/codex/instructions.md` | Codex-specific instructions. |
 | `shared/agents/harnesses/prime-agent.nix` | Writes `AGENTS.md`, `settings.json`, and the guard extension. |
 | `shared/agents/harnesses/prime-agent/instructions.md` | Prime Agent-specific instructions. |
@@ -639,13 +639,15 @@ let
 in
 {
   config = lib.mkIf enabled {
-    # Deliberately no programs.codex.skills. From 0.94 that option writes the
-    # same ~/.agents/skills path default.nix links, and two definitions of one
-    # home.file target collide.
     programs.codex = {
       enable = true;
       package = codexPkg;
-      context = instructions;
+
+      # The pinned home-manager's codex module has only enable, package,
+      # settings, and custom-instructions. custom-instructions is typed as
+      # lines and written as text to ~/.codex/AGENTS.md, so it needs the file
+      # contents rather than the store path mkInstructions returns.
+      custom-instructions = builtins.readFile instructions;
 
       settings = lib.filterAttrs (_: v: v != null) {
         model = hcfg.model;

@@ -72,6 +72,11 @@
               theme = "dark-ansi";
             };
 
+            my.agents.harnesses.codex = {
+              enable = true;
+              reasoningEffort = "high";
+            };
+
           }
           # neru.homeManagerModules.default
           # {

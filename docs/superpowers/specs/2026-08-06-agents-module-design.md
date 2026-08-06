@@ -30,6 +30,8 @@ Prime Agent is a distribution of `earendil-works/pi`; its dependencies are `@ear
 
 Claude Code and Codex have upstream home-manager modules (`programs.claude-code`, `programs.codex`). Prime Agent has none, so its files are written directly.
 
+The pinned home-manager's `programs.codex` is narrower than the current one on that project's main branch: it offers `enable`, `package`, `settings`, and `custom-instructions`, and nothing for skills or rules. Codex still finds the shared skills, because it reads `~/.agents/skills` on its own and the module links that path independently of `programs.codex`.
+
 ## Directory layout
 
 ```

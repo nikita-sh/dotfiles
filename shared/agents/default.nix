@@ -9,7 +9,10 @@ let
   agentsLib = import ./lib.nix { inherit lib pkgs; };
 in
 {
-  imports = [ ./harnesses/claude-code.nix ];
+  imports = [
+    ./harnesses/claude-code.nix
+    ./harnesses/codex.nix
+  ];
 
   options.my.agents = {
     instructions = lib.mkOption {
@@ -50,5 +53,8 @@ in
 
     # On PATH for manual testing: `echo '{"tool_name":...}' | dcg`
     home.packages = lib.optional cfg.guard.enable cfg.guard.package;
+
+    # Codex from 0.94 and Prime Agent both read this location.
+    home.file.".agents/skills".source = cfg.skillsDir;
   };
 }
