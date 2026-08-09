@@ -40,6 +40,11 @@ let
         ];
       }
     ];
+    attribution = {
+      commit = "";
+      pr = "";
+      sessionUrl = false;
+    };
   };
 
   # Seeded on first run; Claude may overwrite these at runtime (/effort, /model,
