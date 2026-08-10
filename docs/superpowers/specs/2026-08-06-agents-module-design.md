@@ -101,7 +101,9 @@ The guard applies uniformly to whichever harnesses are enabled. There is no per-
 
 `mkInstructions harness` concatenates the shared instruction body, the harness's own `instructions.md`, and its `extraInstructions` into one store path, used as `CLAUDE.md` or `AGENTS.md`.
 
-Skills need no helper. The single `shared/agents/skills` source is linked to `~/.agents/skills`, which Codex from 0.94 reads, and is passed to `programs.claude-code.skillsDir`.
+Skills need no helper. `shared/agents/skills` and any imported set are copied into one derivation, which is linked to `~/.agents/skills`, which Codex from 0.94 reads, and passed to `programs.claude-code.skillsDir`.
+
+`superpowers.enable` adds the skills from the `obra/superpowers` flake input to that merge. They are installed as personal skills rather than through the plugin loader, so the `superpowers:` prefix their cross-references use no longer resolves and is stripped during the build. The plugin's SessionStart hook is reproduced in the Claude Code harness: a generated script that emits the `using-superpowers` skill as `additionalContext`. Codex has no equivalent session hook, so it gets the skills without the bootstrap.
 
 ## Destructive-command guard
 
