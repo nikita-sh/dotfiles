@@ -2,11 +2,29 @@
   pkgs,
   lib,
   config,
+  inputs,
   ...
 }:
 let
   cfg = config.my.agents;
   agentsLib = import ./lib.nix { inherit lib pkgs; };
+
+  # The upstream skills address each other as `superpowers:<name>`, which only
+  # resolves when superpowers is installed as a plugin. These are installed as
+  # personal skills, where the name is bare.
+  superpowersSkills = pkgs.runCommand "superpowers-skills" { } ''
+    cp -r ${inputs.superpowers}/skills $out
+    chmod -R u+w $out
+    find $out -type f -name '*.md' -exec sed -i 's/superpowers://g' {} +
+  '';
+
+  skills = pkgs.runCommand "agent-skills" { } ''
+    mkdir -p $out
+    ${lib.concatMapStringsSep "\n" (dir: "cp -r ${dir}/* $out/") (
+      [ cfg.skillsDir ] ++ lib.optional cfg.superpowers.enable superpowersSkills
+    )}
+    chmod -R u+w $out
+  '';
 in
 {
   imports = [
@@ -24,7 +42,13 @@ in
     skillsDir = lib.mkOption {
       type = lib.types.path;
       default = ./skills;
-      description = "Single skills source. Every harness reads the same directory.";
+      description = "Repo-owned skills. Merged with any imported set into the single directory every harness reads.";
+    };
+
+    superpowers.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Add the obra/superpowers skills, and the session-start bootstrap that introduces them.";
     };
 
     guard = {
@@ -50,11 +74,12 @@ in
     # Nested under config, not top level: the module system rejects a bare
     # `_module` attribute in a module that also has an explicit `config` block.
     _module.args.agentsLib = agentsLib;
+    _module.args.agentSkills = skills;
 
     # On PATH for manual testing: `echo '{"tool_name":...}' | dcg`
     home.packages = lib.optional cfg.guard.enable cfg.guard.package;
 
-    # Codex from 0.94 and Prime Agent both read this location.
-    home.file.".agents/skills".source = cfg.skillsDir;
+    # Codex reads this location from 0.94.
+    home.file.".agents/skills".source = skills;
   };
 }

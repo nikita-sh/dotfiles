@@ -389,17 +389,34 @@
         "nix-vscode-extensions": "nix-vscode-extensions_2",
         "nixpkgs": "nixpkgs_6",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "superpowers": "superpowers",
         "vscode-server": "vscode-server"
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-vKTbuLUtKyKpFCZa2hmp1lBEZdbYQDNU9tRjgb7EGjU=",
+        "narHash": "sha256-Llewif7RMCtNYHlOPTnFplAcwoxiXCkqi+5XBXatFyI=",
         "path": "../../shared",
         "type": "path"
       },
       "original": {
         "path": "../../shared",
         "type": "path"
+      }
+    },
+    "superpowers": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785266736,
+        "narHash": "sha256-fnl+HbPL2qD5Zgz8a1NctjFJSqu6UsyHJAhQMLQNXXc=",
+        "owner": "obra",
+        "repo": "superpowers",
+        "rev": "44c9b2d6e889982ac18c27d05a19fefe335194e1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "obra",
+        "repo": "superpowers",
+        "type": "github"
       }
     },
     "systems": {

@@ -12,6 +12,10 @@
       url = "github:oxalica/nil";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    superpowers = {
+      url = "github:obra/superpowers";
+      flake = false;
+    };
   };
 
   outputs =

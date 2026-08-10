@@ -3,6 +3,7 @@
   lib,
   config,
   agentsLib,
+  agentSkills,
   ...
 }:
 let
@@ -24,6 +25,28 @@ let
 
   optionalDir = dir: if builtins.pathExists dir then dir else null;
 
+  # Replaces what the superpowers plugin's own SessionStart hook did: put the
+  # using-superpowers skill in front of the model at the start of every session.
+  superpowersPreamble = ''
+    <EXTREMELY_IMPORTANT>
+    You have superpowers.
+
+    **Below is the full content of your 'using-superpowers' skill - your introduction to using skills. For all other skills, use the 'Skill' tool:**
+
+  '';
+
+  superpowersBootstrap = pkgs.writeShellApplication {
+    name = "superpowers-session-start";
+    runtimeInputs = [ pkgs.jq ];
+    text = ''
+      jq -n \
+        --rawfile skill ${agentSkills}/using-superpowers/SKILL.md \
+        --arg pre ${lib.escapeShellArg superpowersPreamble} \
+        --arg post ${lib.escapeShellArg "\n</EXTREMELY_IMPORTANT>"} \
+        '{hookSpecificOutput: {hookEventName: "SessionStart", additionalContext: ($pre + $skill + $post)}}'
+    '';
+  };
+
   effort = agentsLib.mapEffort "claude-code" {
     low = "low";
     medium = "medium";
@@ -36,6 +59,34 @@ let
     ./claude-code/instructions.md
     hcfg.extraInstructions
   ];
+
+  managedHooks =
+    lib.optionalAttrs cfg.guard.enable {
+      PreToolUse = [
+        {
+          matcher = "Bash";
+          hooks = [
+            {
+              type = "command";
+              command = lib.getExe cfg.guard.package;
+            }
+          ];
+        }
+      ];
+    }
+    // lib.optionalAttrs cfg.superpowers.enable {
+      SessionStart = [
+        {
+          matcher = "startup|clear|compact";
+          hooks = [
+            {
+              type = "command";
+              command = lib.getExe superpowersBootstrap;
+            }
+          ];
+        }
+      ];
+    };
 
   # Policy plus store-path keys: nix always wins, refreshed every rebuild.
   managedSettings = {
@@ -53,19 +104,7 @@ let
       command = lib.getExe statusline;
     };
   }
-  // lib.optionalAttrs cfg.guard.enable {
-    hooks.PreToolUse = [
-      {
-        matcher = "Bash";
-        hooks = [
-          {
-            type = "command";
-            command = lib.getExe cfg.guard.package;
-          }
-        ];
-      }
-    ];
-  }
+  // lib.optionalAttrs (managedHooks != { }) { hooks = managedHooks; }
   // hcfg.settings;
 
   # Seeded on first run; Claude may overwrite these at runtime (/effort, /model,
@@ -88,7 +127,7 @@ in
       # Repo-owned customizations, symlinked into ~/.claude/. Dropping a new
       # skills/<name>/SKILL.md (or agents/commands/hooks file) is all that's
       # needed - no extra wiring.
-      skillsDir = cfg.skillsDir;
+      skillsDir = agentSkills;
       agentsDir = optionalDir ./claude-code/agents;
       commandsDir = optionalDir ./claude-code/commands;
       hooksDir = optionalDir ./claude-code/hooks;
