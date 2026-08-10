@@ -49,4 +49,4 @@ Close with what you could not explain: a hunk with no apparent connection to the
 
 Scale the body to the number of distinct intents, not to the line count. A diff touching many files for one reason is one group.
 
-When the diff is large, or the user asks for a file, write the same content to `/tmp/claude/<pr-number-or-branch>-explained.md` and give the path. Check the path is free first and pick another name if it is taken.
+When the diff is large, or the user asks for a file, write the same content to `/tmp/agent/<pr-number-or-branch>-explained.md` and give the path. Check the path is free first and pick another name if it is taken.

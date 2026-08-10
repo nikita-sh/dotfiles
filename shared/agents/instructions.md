@@ -19,31 +19,13 @@
 
 ---
 
-## Agent Use
-
-- When spawning subagents, pick the cheapest model and effort level that fits the task — Haiku for mechanical work, Sonnet for routine coding, Opus for hard reasoning. Never spawn a Fable subagent without asking me first (state the intended model and effort). In autonomous runs where I can't be prompted, use Opus instead.
-
-- When running as Fable or Opus, additionally: delegate self-contained work to subagents on a cheaper model. Fable tokens cost 4x Sonnet and 10x Haiku and 2x Opus, and everything read inline (files, tool output) is re-processed on every later turn. So the test is not "is this task small" — it is "will doing this inline pull new content into my context". Reading files, running tests or typechecks, broad searches, mechanical edits, and boilerplate always go to subagents.
-
-    Keep inline only work that meets at least one of: the decision is hard to reverse (schema, API shape, architecture); the output can't be mechanically verified; or the reading is exploratory — you can't yet phrase what you're looking for as a question a subagent could answer. If you can phrase the question ("what props does X take", "how does Y handle Z"), send it to a subagent and use the answer.
-
-    The only other exception: a single edit to a file already fully in context, where nothing new must be read and no command must be run. If the task involves reading a file or running a command, delegation is cheaper — do not reason about whether the prompt "costs more than the task".
-
-    When executing a plan or a task with many pinned steps, split up front: decisions stay inline; every mechanical step goes into subagent batches. Point the subagent at the plan file instead of restating its contents. If a subagent hits something needing judgment, it reports back and the judgment happens inline — that round trip is expected and still cheaper than doing the mechanical work inline.
-
-- The cost-based delegation rules above apply to the top-level Fable/Opus session. When you are working on a task handed to you by another agent, do the core of that task yourself with your own tools. Spawning your own subagents is fine only when it shrinks the work: parallel fan-out over independent pieces, or offloading a self-contained sub-piece that is clearly smaller than your assigned task. Never delegate your entire task onward, and never spawn a subagent on a larger model than your own — if a piece needs more judgment than your model has, report back instead.
-
-- When spawning a subagent, state in its prompt what it should do itself versus what it may further delegate.
-
----
-
 ## Tool Use
 
 - When creating Linear tickets, create them with status set to `Ready for Execution`
 
 - When a command can take content on stdin (PR bodies, comments, etc.), pipe it directly instead of staging a temp file — e.g. `gh pr edit <n> --body-file - <<'EOF' … EOF`. After publishing, read back the live target (e.g. `gh pr view --json body`) to confirm the intended content landed.
 
-- When writing to `/tmp`, write to `/tmp/claude`
+- When writing to `/tmp`, write to `/tmp/agent`
 
 - If you genuinely need a temp file, first check whether the path is already taken (e.g. `ls`/`test -e`); pick a different name if it is. Never blind-write a reused path via shell `>`: my shell has `noclobber` set, so `>` silently fails when the file exists and a later command then uses whatever STALE content was left there.
 
@@ -111,7 +93,7 @@ NEVER fabricate statistics, data points, or claims not explicitly present in sou
 
 **Maintain a source map.** Track every factual claim, metric, name, or date back to its source. Present the draft clean (no inline tags), with a "Source Map" appendix listing each claim and its origin (document name, section/heading).
 
-**Verify before delivering.** For substantive documents (strategy docs, external-facing reports, review comments, posts, presentations), spawn a verification agent (Opus — no weaker model) that re-reads each source and checks every claim in the source map. Mark any unverifiable claim as [UNVERIFIED].
+**Verify before delivering.** For substantive documents (strategy docs, external-facing reports, review comments, posts, presentations), spawn a verification agent (a top-tier model — no weaker model) that re-reads each source and checks every claim in the source map. Mark any unverifiable claim as [UNVERIFIED].
 
 **Separate verified from unverified.** Present the clean draft with unverified claims removed, plus a separate list of removed claims so I can decide whether to add them back with proper sourcing.
 
@@ -122,10 +104,6 @@ NEVER fabricate statistics, data points, or claims not explicitly present in sou
 ## Coding
 
 **Tradeoff:** These guidelines bias toward caution over speed. Skip the ceremony (plans, assumption-stating) when the task is single-file, mechanically verifiable, and reversible with a single revert.
-
-### Review
-
-Codex, using the latest frontier model of GPT, will be used to review your work
 
 ### Think Before Coding
 
@@ -234,4 +212,3 @@ Apply the following when told to implement a plan from a file.
 - If new information invalidates the plan: **stop**, update the plan, then continue.
 3. **Document Results**
 - Add a short "Results" section at the bottom of the file: what changed, where, how verified.
-

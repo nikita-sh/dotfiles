@@ -66,10 +66,14 @@
               p10k = ./dot-p10k.zsh;
             };
 
+            my.agents.harnesses.claude-code = {
+              enable = true;
+            };
+
           }
+          (shared.homeManagerModules.agents)
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)
-          (shared.homeManagerModules.claude)
           (shared.homeManagerModules.direnv)
           (shared.homeManagerModules.git)
           (shared.homeManagerModules.home-manager)

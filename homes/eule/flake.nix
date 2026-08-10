@@ -65,6 +65,19 @@
               p10k = ./dot-p10k.zsh;
             };
 
+            my.agents.harnesses.claude-code = {
+              enable = true;
+              model = "claude-opus-5[1m]";
+              reasoningEffort = "medium";
+              theme = "dark-ansi";
+            };
+
+            my.agents.harnesses.codex = {
+              enable = true;
+              model = "gpt-5.6-terra";
+              reasoningEffort = "high";
+            };
+
           }
           # neru.homeManagerModules.default
           # {
@@ -85,9 +98,9 @@
           #   };
           # }
           ./mercury.nix
+          (shared.homeManagerModules.agents)
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)
-          (shared.homeManagerModules.claude)
           (shared.homeManagerModules.direnv)
           (shared.homeManagerModules.git)
           (shared.homeManagerModules.home-manager)
