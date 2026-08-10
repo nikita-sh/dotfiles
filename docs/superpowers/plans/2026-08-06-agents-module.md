@@ -2,20 +2,19 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace `shared/claude/` with `shared/agents/`, a home-manager module that configures Claude Code, Codex, and Prime Agent from one shared instruction body, one skills directory, one normalized set of model knobs, and one destructive-command guard.
+**Goal:** Replace `shared/claude/` with `shared/agents/`, a home-manager module that configures Claude Code and Codex from one shared instruction body, one skills directory, one normalized set of model knobs, and one destructive-command guard.
 
-**Architecture:** `shared/agents/default.nix` declares `my.agents` and imports one module per harness. Each harness module reads its own entry under `my.agents.harnesses.<name>` and renders native configuration. Two helpers in `lib.nix` carry the logic that would otherwise be duplicated: an activation-script merge for settings files the agent rewrites at runtime, and instruction-file concatenation. Prime Agent is not in nixpkgs, so this also adds a derivation for it.
+**Architecture:** `shared/agents/default.nix` declares `my.agents` and imports one module per harness. Each harness module reads its own entry under `my.agents.harnesses.<name>` and renders native configuration. Two helpers in `lib.nix` carry the logic that would otherwise be duplicated: an activation-script merge for settings files the agent rewrites at runtime, and instruction-file concatenation.
 
-**Tech Stack:** Nix, home-manager (`release-25.11`), `nixpkgs-unstable` for Codex, Node 22 for Prime Agent, jq for the settings merge.
+**Tech Stack:** Nix, home-manager (`release-25.11`), `nixpkgs-unstable` for Codex, jq for the settings merge.
 
 ## Global Constraints
 
 - Read the spec at `docs/superpowers/specs/2026-08-06-agents-module-design.md` before starting. Do not restate it here; this plan is the execution order.
-- Never edit files under `~/.claude`, `~/.codex`, or `~/.prime` by hand. They are produced by the module. Edit the repo and rebuild.
+- Never edit files under `~/.claude` or `~/.codex` by hand. They are produced by the module. Edit the repo and rebuild.
 - Nix files are formatted with `nixfmt-rfc-style`. Run `nix fmt` or match the surrounding style exactly.
 - Claude Code `effortLevel` accepts exactly `low`, `medium`, `high`, `xhigh`.
 - Codex must come from `inputs.nixpkgs-unstable`; `release-25.11` has 0.92.0, below the 0.125.0 hook floor and the 0.94.0 skills floor.
-- Prime Agent is pinned at version `0.7.0`.
 - Comments must explain something not evident from the code, a tradeoff, domain knowledge, or an external constraint. Do not narrate what the code does.
 - Commit after every task. Do not push.
 
@@ -43,14 +42,10 @@ Working on `eule` is assumed. For a different host, substitute the hostname in b
 | `shared/agents/instructions.md` | Harness-neutral instruction body. |
 | `shared/agents/skills/` | Single skills source. Moved from `shared/claude/skills/`. |
 | `shared/agents/guard/dcg.nix` | The dcg derivation. Moved from `shared/claude/dcg.nix`. |
-| `shared/agents/guard/prime-agent-extension.ts` | `tool_call` handler that shells out to dcg. |
-| `shared/agents/pkgs/prime-agent.nix` | Prime Agent derivation. |
 | `shared/agents/harnesses/claude-code.nix` | Renders `programs.claude-code` plus the managed `settings.json` merge. |
 | `shared/agents/harnesses/claude-code/` | `instructions.md`, `agents/`, `statusline-command.sh`, `claude-code-log.nix`. |
 | `shared/agents/harnesses/codex.nix` | Renders `programs.codex` plus the `hooks.json` merge. Codex reads the shared skills through the `~/.agents/skills` link `default.nix` creates, so this module says nothing about skills. |
 | `shared/agents/harnesses/codex/instructions.md` | Codex-specific instructions. |
-| `shared/agents/harnesses/prime-agent.nix` | Writes `AGENTS.md`, `settings.json`, and the guard extension. |
-| `shared/agents/harnesses/prime-agent/instructions.md` | Prime Agent-specific instructions. |
 
 ---
 
@@ -588,7 +583,7 @@ In `shared/agents/default.nix`, extend `config` so every harness that reads the 
     # On PATH for manual testing: `echo '{"tool_name":...}' | dcg`
     home.packages = lib.optional cfg.guard.enable cfg.guard.package;
 
-    # Codex from 0.94 and Prime Agent both read this location.
+    # Codex from 0.94 reads this location.
     home.file.".agents/skills".source = cfg.skillsDir;
   };
 ```
@@ -751,366 +746,6 @@ hook and skills floors."
 
 ---
 
-## Task 5: Package Prime Agent
-
-**Files:**
-- Create: `shared/agents/pkgs/prime-agent.nix`
-- Modify: `shared/flake.nix` (add a `packages` output)
-
-**Interfaces:**
-- Produces: a derivation with `pname = "prime-agent"`, `version = "0.7.0"`, `meta.mainProgram = "prime-agent"`, exposing `$out/bin/prime-agent`.
-
-- [ ] **Step 1: Write the derivation with placeholder hashes**
-
-Both hashes are discovered by building. Start with `lib.fakeHash` in each slot.
-
-```nix
-{
-  lib,
-  stdenvNoCC,
-  fetchurl,
-  nodejs_22,
-  makeWrapper,
-  cacert,
-  python3,
-}:
-let
-  version = "0.7.0";
-
-  src = fetchurl {
-    url = "https://github.com/PrimeIntellect-ai/prime-agent/releases/download/v${version}/prime-agent-${version}.tgz";
-    hash = lib.fakeHash;
-  };
-
-  # Prime Agent is not on the npm registry and three of its dependencies are
-  # referenced by URL, so there is no lockfile to feed buildNpmPackage. The
-  # tree is resolved once inside a fixed-output derivation instead.
-  nodeModules = stdenvNoCC.mkDerivation {
-    pname = "prime-agent-node-modules";
-    inherit version src;
-
-    nativeBuildInputs = [
-      nodejs_22
-      cacert
-    ];
-
-    dontConfigure = true;
-
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$TMPDIR
-      export npm_config_cache=$TMPDIR/npm-cache
-      npm install --omit=dev --no-audit --no-fund
-      runHook postBuild
-    '';
-
-    installPhase = ''
-      runHook preInstall
-      cp -r node_modules $out
-      runHook postInstall
-    '';
-
-    outputHashMode = "recursive";
-    outputHashAlgo = "sha256";
-    outputHash = lib.fakeHash;
-  };
-
-  kernelPython = python3.withPackages (ps: [ ps.ipython ]);
-in
-stdenvNoCC.mkDerivation {
-  pname = "prime-agent";
-  inherit version src;
-
-  nativeBuildInputs = [ makeWrapper ];
-
-  dontConfigure = true;
-  dontBuild = true;
-
-  installPhase = ''
-    runHook preInstall
-    mkdir -p $out/lib/prime-agent
-    cp -r . $out/lib/prime-agent/
-    ln -s ${nodeModules} $out/lib/prime-agent/node_modules
-
-    makeWrapper ${lib.getExe nodejs_22} $out/bin/prime-agent \
-      --add-flags "$out/lib/prime-agent/dist/bundle/cli.js" \
-      --set PI_SKIP_VERSION_CHECK 1 \
-      --set PRIME_AGENT_INSTALL_UV 0 \
-      --set PRIME_AGENT_KERNEL_PYTHON ${lib.getExe kernelPython}
-    runHook postInstall
-  '';
-
-  meta = {
-    description = "Self-improving RLM coding agent from Prime Intellect";
-    homepage = "https://github.com/PrimeIntellect-ai/prime-agent";
-    mainProgram = "prime-agent";
-    platforms = lib.platforms.unix;
-  };
-}
-```
-
-The wrapper pins three environment variables for external reasons: the CLI would otherwise try to self-update over a read-only store path, provision its own `uv`, and provision its own Python for the IPython kernel.
-
-- [ ] **Step 2: Resolve the source hash**
-
-```bash
-cd ~/dev/dotfiles
-nix-build --no-out-link -E '(import <nixpkgs> {}).callPackage ./shared/agents/pkgs/prime-agent.nix {}' 2>&1 | grep -A2 'got:'
-```
-
-Expected: a `got: sha256-...` line for the tarball. Paste that value over the first `lib.fakeHash`.
-
-- [ ] **Step 3: Resolve the node_modules hash**
-
-Rerun the same command. Expected: a second `got: sha256-...`, this time for `prime-agent-node-modules`. Paste it over the remaining `lib.fakeHash`.
-
-If instead the build fails inside `npm install`, read the error before changing hashes. A missing native toolchain for `zeromq` means its prebuilt binding was not used; that is a real packaging problem, not a hash problem, and it needs `zeromq`'s prebuild path investigated rather than worked around.
-
-- [ ] **Step 4: Build and run it**
-
-```bash
-cd ~/dev/dotfiles
-nix-build --no-out-link -E '(import <nixpkgs> {}).callPackage ./shared/agents/pkgs/prime-agent.nix {}'
-```
-
-Then run the binary from the store path that prints:
-
-```bash
-"$(nix-build --no-out-link -E '(import <nixpkgs> {}).callPackage ./shared/agents/pkgs/prime-agent.nix {}')/bin/prime-agent" --version
-```
-
-Expected: `0.7.0`.
-
-- [ ] **Step 5: Expose it as a flake package**
-
-In `shared/flake.nix`, add a `packages` output alongside `homeManagerModules`. Add to the `let` block:
-
-```nix
-      systems = [
-        "aarch64-darwin"
-        "x86_64-darwin"
-        "aarch64-linux"
-        "x86_64-linux"
-      ];
-      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
-```
-
-and to the output set:
-
-```nix
-      packages = forAllSystems (pkgs: {
-        prime-agent = pkgs.callPackage ./agents/pkgs/prime-agent.nix { };
-      });
-```
-
-- [ ] **Step 6: Build through the flake**
-
-```bash
-cd ~/dev/dotfiles
-nix build ./shared#prime-agent
-./result/bin/prime-agent --version
-```
-
-Expected: `0.7.0`.
-
-- [ ] **Step 7: Commit**
-
-```bash
-cd ~/dev/dotfiles
-git add -A
-git commit -m "package prime-agent 0.7.0
-
-Not on the npm registry and no lockfile, so node_modules resolves inside a
-fixed-output derivation."
-```
-
----
-
-## Task 6: Add the Prime Agent harness and its guard extension
-
-**Files:**
-- Create: `shared/agents/harnesses/prime-agent.nix`
-- Create: `shared/agents/harnesses/prime-agent/instructions.md`
-- Create: `shared/agents/guard/prime-agent-extension.ts`
-- Modify: `shared/agents/default.nix` (imports)
-- Modify: `homes/eule/flake.nix`
-
-**Interfaces:**
-- Consumes: the derivation from Task 5, `agentsLib.mkInstructions`, `agentsLib.mkMutableSettings`, `agentsLib.mapEffort`, `cfg.guard.{enable,package}`.
-
-- [ ] **Step 1: Write `shared/agents/guard/prime-agent-extension.ts`**
-
-```ts
-import { execFile } from "node:child_process";
-
-// Substituted with the dcg store path at build time.
-const DCG = "@dcg@";
-
-type ToolCallEvent = {
-  toolName: string;
-  input?: { command?: string };
-};
-
-export default function (pi: {
-  on: (
-    event: "tool_call",
-    handler: (event: ToolCallEvent) => Promise<{ block: true; reason: string } | undefined>,
-  ) => void;
-}) {
-  pi.on("tool_call", async (event) => {
-    if (event.toolName !== "bash") return undefined;
-
-    const command = event.input?.command;
-    if (typeof command !== "string" || command === "") return undefined;
-
-    return await new Promise((resolve) => {
-      execFile(DCG, ["--robot", "test", command], (error, stdout) => {
-        // Exit 0 allows, exit 1 denies, exit 3 and above is a dcg failure.
-        // A dcg failure fails open so a broken guard cannot wedge the agent,
-        // matching the posture of dcg's other integrations.
-        const code = typeof error?.code === "number" ? error.code : 0;
-        if (code !== 1) return resolve(undefined);
-
-        let reason = "Destructive command blocked by dcg.";
-        try {
-          const parsed = JSON.parse(stdout);
-          if (typeof parsed.reason === "string") reason = parsed.reason;
-        } catch {
-          // Denial stands even when the payload is unreadable.
-        }
-        resolve({ block: true, reason });
-      });
-    });
-  });
-}
-```
-
-- [ ] **Step 2: Write `shared/agents/harnesses/prime-agent/instructions.md`**
-
-```markdown
-## Harness
-
-You are running as Prime Agent. You have a persistent IPython kernel available as a tool; prefer it over one-shot shell invocations for anything stateful.
-
-Shell commands pass through a destructive-command guard before they run. A blocked command is a policy decision, not a transient failure: do not retry it, and do not work around it by writing the same command into a script.
-```
-
-- [ ] **Step 3: Write `shared/agents/harnesses/prime-agent.nix`**
-
-```nix
-{
-  pkgs,
-  lib,
-  config,
-  agentsLib,
-  ...
-}:
-let
-  cfg = config.my.agents;
-  # `harnesses` is attrsOf, so an unmentioned harness has no attribute at all.
-  hcfg = cfg.harnesses.prime-agent or null;
-  enabled = hcfg != null && hcfg.enable;
-
-  prime-agent = pkgs.callPackage ../pkgs/prime-agent.nix { };
-
-  effort = agentsLib.mapEffort "prime-agent" {
-    off = "off";
-    minimal = "minimal";
-    low = "low";
-    medium = "medium";
-    high = "high";
-    xhigh = "xhigh";
-  } hcfg.reasoningEffort;
-
-  instructions = agentsLib.mkInstructions "prime-agent" [
-    cfg.instructions
-    ./prime-agent/instructions.md
-    hcfg.extraInstructions
-  ];
-
-  guardExtension = pkgs.replaceVars ../guard/prime-agent-extension.ts {
-    dcg = lib.getExe cfg.guard.package;
-  };
-in
-{
-  config = lib.mkIf enabled {
-    home.packages = [ prime-agent ];
-
-    home.file.".prime/agent/AGENTS.md".source = instructions;
-
-    home.file.".prime/agent/extensions/dcg.ts" = lib.mkIf cfg.guard.enable {
-      source = guardExtension;
-    };
-
-    home.activation.primeAgentSettings = agentsLib.mkMutableSettings {
-      path = ".prime/agent/settings.json";
-      defaults = lib.filterAttrs (_: v: v != null) {
-        defaultModel = hcfg.model;
-        defaultThinkingLevel = effort;
-        theme = hcfg.theme;
-      };
-      managed = hcfg.settings;
-    };
-  };
-}
-```
-
-Model, effort, and theme are seeded rather than managed because Prime Agent rewrites `settings.json` when you use `/settings`, and a managed key would overwrite that on every rebuild. Anything set through `settings` is managed and does win.
-
-- [ ] **Step 4: Import it**
-
-In `shared/agents/default.nix`:
-
-```nix
-  imports = [
-    ./harnesses/claude-code.nix
-    ./harnesses/codex.nix
-    ./harnesses/prime-agent.nix
-  ];
-```
-
-- [ ] **Step 5: Enable it on eule**
-
-In `homes/eule/flake.nix`:
-
-```nix
-            my.agents.harnesses.prime-agent = {
-              enable = true;
-              reasoningEffort = "xhigh";
-            };
-```
-
-- [ ] **Step 6: Build and inspect**
-
-```bash
-cd ~/dev/dotfiles
-nix flake update shared --flake ~/dev/dotfiles/homes/eule
-home-manager build --flake ~/dev/dotfiles/homes/eule#nikita@eule
-head -20 result/home-files/.prime/agent/AGENTS.md
-cat result/home-files/.prime/agent/extensions/dcg.ts | head -5
-```
-
-Expected: `AGENTS.md` opens with the shared body, and `dcg.ts` has a real `/nix/store/...-dcg-.../bin/dcg` path in place of `@dcg@`.
-
-- [ ] **Step 7: Verify the robot-mode contract the extension depends on**
-
-```bash
-dcg --robot test "git status"; echo "allow exit=$?"
-dcg --robot test "rm -rf ./src"; echo "deny exit=$?"
-```
-
-Expected: exit 0 for the first, exit 1 for the second with JSON on stdout carrying a `reason`. If the deny exit code is not 1, the extension's `code !== 1` check is wrong and must be corrected before continuing.
-
-- [ ] **Step 8: Commit**
-
-```bash
-cd ~/dev/dotfiles
-git add -A
-git commit -m "add prime-agent harness with dcg tool_call extension"
-```
-
----
-
 ## Task 7: Activate and verify end to end
 
 **Files:**
@@ -1157,10 +792,10 @@ jq '.hooks.PreToolUse[0].hooks[0].command' ~/.codex/hooks.json
 
 Expected: a `/nix/store/...` dcg path, replacing the previous `/Users/nikita/.local/bin/dcg`.
 
-- [ ] **Step 6: Confirm all three instruction files exist and share a body**
+- [ ] **Step 6: Confirm both instruction files exist and share a body**
 
 ```bash
-for f in ~/.claude/CLAUDE.md ~/.codex/AGENTS.md ~/.prime/agent/AGENTS.md; do
+for f in ~/.claude/CLAUDE.md ~/.codex/AGENTS.md; do
   echo "== $f"; head -3 "$f"; echo "   sections: $(grep -c '^## ' "$f")"
 done
 ```
@@ -1177,15 +812,14 @@ ls ~/.agents/skills
 
 Expected: the two paths are identical and the listing shows the skill directories.
 
-- [ ] **Step 8: Confirm all three binaries run**
+- [ ] **Step 8: Confirm both binaries run**
 
 ```bash
 claude --version
 codex --version
-prime-agent --version
 ```
 
-Expected: Codex reports 0.146.0 and Prime Agent reports 0.7.0.
+Expected: Codex reports 0.146.0.
 
 - [ ] **Step 9: Trust the Codex hook**
 
@@ -1193,7 +827,7 @@ Start `codex`, run `/hooks`, and trust the dcg entry. Codex silently skips an un
 
 - [ ] **Step 10: Confirm the guard blocks in each harness**
 
-In a throwaway git repository, ask each of the three agents to run `git reset --hard HEAD~1`. Expected: each refuses, the repository is unchanged, and Codex's log shows `hook: PreToolUse Blocked`.
+In a throwaway git repository, ask each agent to run `git reset --hard HEAD~1`. Expected: each refuses, the repository is unchanged, and Codex's log shows `hook: PreToolUse Blocked`.
 
 - [ ] **Step 11: Build the other three hosts**
 
@@ -1206,7 +840,7 @@ for h in mynah kolibri falke; do
 done
 ```
 
-Expected: three `ok` lines. Those hosts have only `claude-code` enabled, so neither Codex nor Prime Agent should appear in their closure.
+Expected: three `ok` lines. Those hosts have only `claude-code` enabled, so Codex should not appear in their closure.
 
 - [ ] **Step 12: Add a Results section to this plan and commit**
 
@@ -1215,25 +849,33 @@ Append a `## Results` section recording what changed, where, and how it was veri
 ```bash
 cd ~/dev/dotfiles
 git add -A
-git commit -m "enable codex and prime-agent harnesses on eule"
+git commit -m "enable codex harness on eule"
 ```
 
 ---
 
 ## Acceptance criteria
 
-- `hmrb switch` succeeds on `eule` with all three harnesses enabled, and the other three homes still evaluate.
+- `hmrb switch` succeeds on `eule` with both harnesses enabled, and the other three homes still evaluate.
 - `~/.claude/settings.json` is a real writable file and a runtime `effortLevel` change survives a rebuild.
-- `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, and `~/.prime/agent/AGENTS.md` each contain the shared body followed by their harness-specific section.
+- `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` each contain the shared body followed by their harness-specific section.
 - `~/.agents/skills` and `~/.claude/skills` resolve to the same store path.
-- `~/.codex/config.toml` carries the normalized model and reasoning values, and `~/.codex/hooks.json` points at the dcg store path.
-- `~/.prime/agent/settings.json` is seeded and `~/.prime/agent/extensions/dcg.ts` has the dcg store path baked in.
-- A destructive command is denied through all three paths.
-- `prime-agent --version` reports 0.7.0 and `nix build ./shared#prime-agent` succeeds.
+- `~/.codex/config.toml` is seeded with the normalized model and reasoning values, keeps everything Codex wrote there itself, and `~/.codex/hooks.json` points at the dcg store path.
+- A destructive command is denied through both paths.
 - `shared/claude/` is gone and no flake references `shared.homeManagerModules.claude`.
 
 ## Known risks
 
-The `node_modules` fixed-output hash depends on what `npm install` resolves. A floating dependency range or a different npm version changes the tree and the build fails with a hash mismatch. That is a visible failure, not a silent wrong result, but it means a rebuild months from now may need a hash refresh.
+Codex's `PreToolUse` does not intercept every `unified_exec` shell path, and in both harnesses the model can write a script to disk and run that. The guard is a guardrail, not an enforcement boundary.
 
-Codex's `PreToolUse` does not intercept every `unified_exec` shell path, and in all three harnesses the model can write a script to disk and run that. The guard is a guardrail, not an enforcement boundary.
+## Results
+
+Prime Agent was dropped from the scope. This plan and the spec were edited to cover Claude Code and Codex only; no Prime Agent package, harness module, or guard extension was written.
+
+`shared/agents/` replaces `shared/claude/`. `default.nix` declares `my.agents` with a shared instruction body, one skills source, one dcg guard, and an `attrsOf` submodule per harness carrying `model`, `reasoningEffort`, `theme`, `extraInstructions`, and raw `settings`. `lib.nix` holds `harnessOptions`, `mapEffort`, `mkInstructions`, and `mkMutableSettings`. `harnesses/claude-code.nix` and `harnesses/codex.nix` translate those into `programs.claude-code` and `programs.codex` plus their activation merges. `eule` enables both harnesses; `mynah`, `kolibri`, and `falke` enable Claude Code alone.
+
+`mkMutableSettings` gained a `format` argument. Codex rewrites `config.toml` at runtime, so a store symlink there would have stranded the plugin registry, marketplace entries, project trust levels, and hook trust hashes already in that file. `programs.codex.settings` is left empty, which suppresses the module's own `config.toml`, and the file is merged in TOML mode instead. The merge converts through JSON with `remarshal`, so comments and key order are not preserved, and it writes the result 0600 to match what Codex creates. Model and reasoning effort are seeded as defaults, so a runtime `/model` change wins over the nix value.
+
+Verified on `eule`: `hmrb switch` activated `claudeSettings`, `codexConfig`, and `codexHooks` without error. Before the switch, a copy of the live `config.toml` was run through the same merge pipeline and compared as normalized JSON against the original, which matched. After the switch, `~/.claude/settings.json` still reads `effortLevel: medium`, `model: opus[1m]`, `theme: dark-ansi`, its managed keys point at store paths, and `~/.codex/config.toml` still carries every runtime section. Both `~/.claude/settings.json` and `~/.codex/hooks.json` now invoke the dcg store path instead of `~/.local/bin/dcg`. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` both open with the shared body. `~/.agents/skills` and `~/.claude/skills` list the same skills.
+
+Two things could not be verified from a rebuild. The Codex hook must be trusted once through `/hooks`, and rewriting its command to the store path invalidated the trust hash recorded in `config.toml`, so that step is outstanding. And `mynah`, `kolibri`, and `falke` cannot be evaluated from this machine at all: their `flake.lock` files carry a mutable `path:../../shared` input with no `narHash`, which nix refuses to read or update. That predates this branch — the same lock entries are on `main` — and it is unrelated to the agents module.

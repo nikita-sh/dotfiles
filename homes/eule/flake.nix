@@ -74,6 +74,7 @@
 
             my.agents.harnesses.codex = {
               enable = true;
+              model = "gpt-5.6-terra";
               reasoningEffort = "high";
             };
 

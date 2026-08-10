@@ -393,7 +393,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-D1ETlT96/q/aR4umzpnhJtB2F243dKuysc/8IvMtRwc=",
+        "narHash": "sha256-vKTbuLUtKyKpFCZa2hmp1lBEZdbYQDNU9tRjgb7EGjU=",
         "path": "../../shared",
         "type": "path"
       },

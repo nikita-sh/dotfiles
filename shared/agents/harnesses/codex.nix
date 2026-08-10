@@ -36,18 +36,25 @@ in
       package = codexPkg;
       custom-instructions = builtins.readFile instructions;
 
-      settings =
-        lib.filterAttrs (_: v: v != null) {
-          model = hcfg.model;
-          model_reasoning_effort = effort;
-        }
-        // hcfg.settings;
+      # Left empty so the module writes no config.toml. Codex rewrites that file
+      # itself (model choice, plugin registry, project trust, hook trust
+      # hashes), so it is merged below instead of symlinked from the store.
+      settings = { };
     };
 
-    # programs.codex manages config.toml and rules, not hooks.json. The file
-    # already exists on machines where dcg's own installer ran, so it is merged
-    # rather than symlinked: that replaces dcg's path with the store path and
-    # leaves unrelated hook entries alone.
+    home.activation.codexConfig = agentsLib.mkMutableSettings {
+      path = ".codex/config.toml";
+      format = "toml";
+      defaults = lib.filterAttrs (_: v: v != null) {
+        model = hcfg.model;
+        model_reasoning_effort = effort;
+      };
+      managed = hcfg.settings;
+    };
+
+    # hooks.json already exists on machines where dcg's own installer ran, so it
+    # is merged rather than symlinked: that replaces dcg's path with the store
+    # path and leaves unrelated hook entries alone.
     home.activation.codexHooks = lib.mkIf cfg.guard.enable (
       agentsLib.mkMutableSettings {
         path = ".codex/hooks.json";

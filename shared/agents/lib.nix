@@ -71,9 +71,12 @@
   # and renames it, which fails inside the store. Precedence is
   # defaults < whatever the agent wrote < nix-managed keys. jq `*` merges
   # objects and replaces arrays, so a managed array replaces wholesale.
+  # `format = "toml"` merges through JSON and converts back; comments and key
+  # order in the existing file are not preserved.
   mkMutableSettings =
     {
       path,
+      format ? "json",
       defaults ? { },
       managed ? { },
     }:
@@ -81,18 +84,27 @@
       jsonFmt = pkgs.formats.json { };
       defaultsJson = jsonFmt.generate "agents-defaults.json" defaults;
       managedJson = jsonFmt.generate "agents-managed.json" managed;
+      remarshal = lib.getExe pkgs.remarshal;
+      toJson = if format == "toml" then "${remarshal} --if toml --of json" else "cat";
+      fromJson = if format == "toml" then "${remarshal} --if json --of toml" else "cat";
     in
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       target="$HOME/${path}"
       run mkdir -p "$(dirname "$target")"
       # Older generations may have left a store symlink here.
-      [ -L "$target" ] && run rm -f "$target"
-      existing="$(cat "$target" 2>/dev/null || echo '{}')"
+      if [ -L "$target" ]; then run rm -f "$target"; fi
+      existing='{}'
+      # An unparseable existing file aborts activation rather than being
+      # overwritten: losing runtime state silently is the worse outcome.
+      if [ -s "$target" ]; then existing="$(${toJson} < "$target")"; fi
       printf '%s' "$existing" \
         | ${pkgs.jq}/bin/jq -S \
             --slurpfile d ${defaultsJson} \
             --slurpfile m ${managedJson} \
-            '$d[0] * . * $m[0]' > "$target.tmp"
+            '$d[0] * . * $m[0]' \
+        | ${fromJson} > "$target.tmp"
+      # Codex creates config.toml 0600; a rebuild must not widen it.
+      run chmod 600 "$target.tmp"
       run mv "$target.tmp" "$target"
     '';
 }
