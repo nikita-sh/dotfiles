@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<!--
+  Template for explain-diff-html. Copy it, then fill in the marked regions.
+  Do not re-emit this CSS or the quiz script when producing an explanation:
+  copy the file and edit the placeholders in place.
+
+  Fill regions, in order:
+    TITLE / KICKER / LEDE   header text
+    TOC                     table of contents entries
+    REVIEW PATH             ordered stops through the diff
+    BACKGROUND              deep + narrow background
+    INTUITION               essence, toy data, diagrams
+    CODE                    grouped walkthrough
+    QUESTIONS               the quiz data array near the bottom
+
+  Diagram families available (reuse these; don't invent a fourth idiom
+  unless the change genuinely needs one):
+    .ledger / .qrow    stacked labelled bars — per-request work, before/after
+    .flow / .fanout    vertical data flow with an emphasised .ctx-box node
+    .ui                simplified phone/app frame for user-visible changes
+  Plus: .callout (+.warn/.good), .panel, .two-col, table.cmp, .stops.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><!--TITLE--></title>
+<style>
+  :root {
+    --ink: #1b1f24;
+    --ink-soft: #4a5560;
+    --rule: #dfe3e8;
+    --bg: #fbfbf9;
+    --panel: #ffffff;
+    --accent: #2f5d8a;
+    --accent-soft: #eaf1f8;
+    --warn: #8a5a2f;
+    --warn-soft: #fbf1e6;
+    --good: #2f7a52;
+    --good-soft: #eaf5ee;
+    --bad: #9b3b3b;
+    --bad-soft: #fbeded;
+    --code-bg: #f4f5f3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Charter, Georgia, "Iowan Old Style", serif;
+    font-size: 18px;
+    line-height: 1.62;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 20px 120px; }
+  header.title { border-bottom: 2px solid var(--ink); padding-bottom: 22px; margin-bottom: 28px; }
+  header.title .kicker {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  h1 { font-size: 2.05rem; line-height: 1.18; margin: 10px 0 8px; }
+  h2 {
+    font-size: 1.5rem;
+    margin: 56px 0 6px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+  }
+  h3 { font-size: 1.16rem; margin: 34px 0 4px; }
+  h4 { font-size: 1rem; margin: 24px 0 2px; color: var(--ink-soft); }
+  p { margin: 14px 0; }
+  .lede { font-size: 1.1rem; color: var(--ink-soft); }
+  a { color: var(--accent); }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.86em;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  pre {
+    white-space: pre;
+    overflow-x: auto;
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin: 18px 0;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  pre .del { color: var(--bad); }
+  pre .add { color: var(--good); }
+  pre .dim { color: #8d949b; }
+  nav.toc {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 28px 0 10px;
+  }
+  nav.toc h2 { all: unset; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  nav.toc ol { margin: 10px 0 0; padding-left: 22px; }
+  nav.toc ol ol { padding-left: 18px; }
+  nav.toc li { margin: 3px 0; }
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 18px;
+    margin: 22px 0;
+  }
+  .callout .label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+  .callout.warn .label { color: var(--warn); }
+  .callout.good { border-color: var(--good); background: var(--good-soft); }
+  .callout.good .label { color: var(--good); }
+  .callout p { margin: 6px 0; }
+  figure { margin: 30px 0; }
+  figcaption { font-size: 0.86rem; color: var(--ink-soft); margin-top: 10px; text-align: left; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 18px;
+  }
+  .panel .nt { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--accent); }
+
+  /* Diagram family 1: stacked labelled bars. One .qrow per unit of work.
+     Use .dup / .gone to mark redundant work and work that disappeared. */
+  .ledger { display: flex; flex-direction: column; gap: 7px; }
+  .qrow { display: flex; align-items: center; gap: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+  .qrow .who { flex: 0 0 128px; color: var(--ink-soft); text-align: right; }
+  .bar { flex: 1; border-radius: 4px; padding: 4px 10px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar.join { background: #2f5d8a; }
+  .bar.join.dup { background: #9b3b3b; }
+  .bar.draft { background: #6b7f95; }
+  .bar.draft.dup { background: #c07b7b; }
+  .bar.other { background: #b6bfc8; color: #263038; }
+  .bar.gone { background: repeating-linear-gradient(45deg, #e8eaec, #e8eaec 6px, #f4f5f6 6px, #f4f5f6 12px); color: #8d949b; }
+  .ledger-head { display: flex; gap: 10px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 4px; }
+  .ledger-head .who { flex: 0 0 128px; text-align: right; }
+  .tally { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule); color: var(--ink-soft); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+  /* Diagram family 2: vertical flow. .ctx-box for the emphasised node that
+     holds example data; .fanout for several consumers of one value. */
+  .flow { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+  .node { border: 1px solid var(--rule); border-radius: 7px; padding: 10px 14px; background: #fff; }
+  .node .nt { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--accent); }
+  .node .nb { font-size: 14px; }
+  .arrow { text-align: center; color: #9aa3ac; font-size: 18px; line-height: 1.1; padding: 5px 0; }
+  .fanout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .fanout .node { text-align: left; }
+  .ctx-box { border: 2px solid var(--accent); border-radius: 7px; background: var(--accent-soft); padding: 12px 14px; }
+  .ctx-box .fld { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; padding: 3px 0; }
+  .ctx-box .fld b { color: var(--ink); }
+
+  /* Diagram family 3: simplified app frame for user-visible changes. */
+  .ui {
+    border: 1px solid #d6dade;
+    border-radius: 12px;
+    background: #fff;
+    max-width: 420px;
+    margin: 0 auto;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+  }
+  .ui .bar-top { background: #f3f5f7; padding: 8px 14px; font-size: 12px; color: #6b7681; border-bottom: 1px solid #e6e9ec; }
+  .ui .body { padding: 16px 18px 20px; }
+  .ui h5 { margin: 0 0 4px; font-size: 15px; }
+  .ui p.sub { margin: 0 0 14px; font-size: 13px; color: #6b7681; }
+  .ui .item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid #eef1f3; font-size: 13.5px; }
+  .ui .dot { flex: 0 0 16px; height: 16px; border-radius: 50%; margin-top: 2px; }
+  .ui .dot.pending { background: #f0c674; }
+  .ui .dot.done { background: #6fbf8e; }
+
+  /* Before/after comparison of functions, types, or call sites. */
+  table.cmp { border-collapse: collapse; width: 100%; font-size: 14.5px; margin: 20px 0; }
+  table.cmp th, table.cmp td { border: 1px solid var(--rule); padding: 8px 10px; text-align: left; vertical-align: top; }
+  table.cmp th { background: #f2f4f6; font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); }
+  table.cmp code { font-size: 12.5px; }
+
+  /* Recommended review path: numbered stops through the diff. */
+  .stops { list-style: none; counter-reset: stop; margin: 22px 0; padding: 0; }
+  .stops > li {
+    counter-increment: stop;
+    position: relative;
+    padding: 12px 0 12px 46px;
+    border-top: 1px solid var(--rule);
+  }
+  .stops > li:last-child { border-bottom: 1px solid var(--rule); }
+  .stops > li::before {
+    content: counter(stop);
+    position: absolute; left: 0; top: 12px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stops .where {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px;
+    color: var(--accent);
+    display: block;
+  }
+  .stops .what { font-weight: 600; }
+  .stops .why { color: var(--ink-soft); font-size: 15px; }
+  .stops .flag {
+    display: inline-block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase;
+    padding: 1px 7px; border-radius: 10px; margin-left: 8px; vertical-align: 2px;
+  }
+  .stops .flag.scrutiny { background: var(--warn-soft); color: var(--warn); border: 1px solid #e8d3b6; }
+  .stops .flag.skim { background: #eef1f3; color: var(--ink-soft); border: 1px solid var(--rule); }
+
+  /* Quiz */
+  .q { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 18px 20px; margin: 22px 0; }
+  .q .qn { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .q .qtext { font-weight: 600; margin: 6px 0 12px; }
+  .opt {
+    display: block; width: 100%; text-align: left;
+    font: inherit; font-size: 15px;
+    background: #fff; border: 1px solid var(--rule); border-radius: 6px;
+    padding: 9px 12px; margin: 7px 0; cursor: pointer;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt.correct { border-color: var(--good); background: var(--good-soft); }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+  .opt .mark { font-family: ui-monospace, monospace; margin-right: 8px; color: var(--ink-soft); }
+  .fb { display: none; margin-top: 12px; padding: 11px 14px; border-radius: 6px; font-size: 15px; }
+  .fb.show { display: block; }
+  .fb.ok { background: var(--good-soft); border-left: 4px solid var(--good); }
+  .fb.no { background: var(--bad-soft); border-left: 4px solid var(--bad); }
+  .score { font-family: ui-monospace, monospace; font-size: 14px; color: var(--ink-soft); margin-top: 24px; }
+
+  @media (max-width: 680px) {
+    body { font-size: 17px; }
+    .two-col { grid-template-columns: 1fr; }
+    .fanout { grid-template-columns: 1fr; }
+    .qrow .who, .ledger-head .who { flex: 0 0 92px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="title">
+  <div class="kicker"><!--KICKER: repo, branch or PR number--></div>
+  <h1><!--TITLE--></h1>
+  <p class="lede"><!--LEDE: two sentences on what the change does and why--></p>
+</header>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <!--TOC-->
+  </ol>
+</nav>
+
+<h2 id="review-path">Recommended review path</h2>
+<!--REVIEW PATH: how to walk the diff in the review tool. State the order the
+    host presents files in and whether to override it; then one <li> per stop.
+    <ol class="stops"> with, per stop: <span class="where">path:line</span>,
+    <span class="what">…</span>, <span class="why">…</span>, and a
+    <span class="flag scrutiny">check closely</span> or
+    <span class="flag skim">safe to skim</span> where it helps. -->
+
+<h2 id="background">Background</h2>
+<!--BACKGROUND: deep background first (say it can be skipped), then narrow-->
+
+<h2 id="intuition">Intuition</h2>
+<!--INTUITION: essence, toy data, diagrams-->
+
+<h2 id="code">Code walkthrough</h2>
+<!--CODE: grouped by intent, not by file order-->
+
+<h2 id="quiz">Quiz</h2>
+<p>Five questions. Each has one best answer; click to check.</p>
+
+<div id="quiz"></div>
+<div class="score" id="score"></div>
+
+<script>
+// Fill this array. One entry per question: `a` is the index of the correct
+// option, `fb` holds one feedback string per option, in the same order, each
+// explaining why that option is right or wrong.
+const QUESTIONS = [
+  // {
+  //   q: "",
+  //   opts: ["", "", "", ""],
+  //   a: 0,
+  //   fb: ["", "", "", ""]
+  // },
+];
+
+let answered = 0, right = 0;
+const container = document.getElementById("quiz");
+const scoreEl = document.getElementById("score");
+
+QUESTIONS.forEach((item, qi) => {
+  const box = document.createElement("div");
+  box.className = "q";
+  const n = document.createElement("div");
+  n.className = "qn";
+  n.textContent = "Question " + (qi + 1) + " of " + QUESTIONS.length;
+  const t = document.createElement("div");
+  t.className = "qtext";
+  t.textContent = item.q;
+  box.appendChild(n);
+  box.appendChild(t);
+
+  const fb = document.createElement("div");
+  fb.className = "fb";
+
+  const buttons = [];
+  item.opts.forEach((text, oi) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.innerHTML = '<span class="mark">' + "ABCD"[oi] + '</span>';
+    b.appendChild(document.createTextNode(text));
+    b.addEventListener("click", () => {
+      if (box.dataset.done) return;
+      box.dataset.done = "1";
+      const ok = oi === item.a;
+      b.classList.add(ok ? "correct" : "wrong");
+      if (!ok) buttons[item.a].classList.add("correct");
+      fb.className = "fb show " + (ok ? "ok" : "no");
+      fb.textContent = (ok ? "Correct. " : "Not quite. ") + item.fb[oi];
+      answered++;
+      if (ok) right++;
+      scoreEl.textContent = right + " / " + answered + " correct" + (answered === QUESTIONS.length ? " — all questions answered." : "");
+    });
+    buttons.push(b);
+    box.appendChild(b);
+  });
+
+  box.appendChild(fb);
+  container.appendChild(box);
+});
+</script>
+
+</div>
+</body>
+</html>
