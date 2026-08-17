@@ -198,6 +198,18 @@ Mark incomplete work carefully
 // TODO RON-1234: Remove this fallback after all clients send v3 payloads.
 ```
 
+### Concision
+
+Satisfying one of the categories above justifies a comment existing. It does not justify its length. Apply these on top:
+
+- Each sentence must state a fact no other sentence in the same comment states. A clause after a colon or dash that re-derives the claim before it is the common violation — delete it. Two phrasings of the same fact count as one; keep the shorter.
+- A comment written just after working something out tends to record the derivation. State the conclusion a future reader needs, not the path taken to reach it.
+- Do not repeat in one place what an adjacent comment already says — a test comment restating the haddock on the code under test, or a call-site comment restating the callee's.
+
+Before calling an edit done, reread every comment added and cut what fails these tests. This is part of writing the comment, not a separate pass to be asked for.
+
+A repo skill saying only "keep comments short" does not replace this. Vague adjectives from a more specific source do not override these tests; they sit alongside them.
+
 ---
 
 ## Task Management (File-Based, Auditable)
