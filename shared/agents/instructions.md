@@ -216,7 +216,7 @@ A repo skill saying only "keep comments short" does not replace this. Vague adje
 
 Apply the following when told to implement a plan from a file. 
 
-Store agent-generated design documents, specifications, implementation plans, and checkpoint notes in `/tmp/agent/docs/`, not in the repository.
+Store agent-generated design documents, specifications, implementation plans, and checkpoint notes outside the repository at `/tmp/agent/docs/`, preserving each skill-relative path after `docs/`. Store a document in the repository only when the user explicitly requests it.
 
 1. **Define Success**
 - Add acceptance criteria (what must be true when done).
