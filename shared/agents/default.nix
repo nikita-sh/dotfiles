@@ -30,6 +30,7 @@ in
   imports = [
     ./harnesses/claude-code.nix
     ./harnesses/codex.nix
+    ./harnesses/opencode.nix
   ];
 
   options.my.agents = {

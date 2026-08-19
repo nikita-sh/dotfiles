@@ -78,6 +78,8 @@
               reasoningEffort = "high";
             };
 
+            my.agents.harnesses.opencode.enable = true;
+
           }
           # neru.homeManagerModules.default
           # {
