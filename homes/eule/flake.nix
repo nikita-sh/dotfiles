@@ -112,6 +112,7 @@
           (shared.homeManagerModules.tmux)
           (shared.homeManagerModules.vscode)
           (shared.homeManagerModules.wezterm)
+          (shared.homeManagerModules.zed)
           (shared.homeManagerModules.zsh)
         ];
       };
