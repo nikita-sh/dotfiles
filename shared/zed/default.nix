@@ -16,7 +16,7 @@
       agent = {
         default_model = {
           provider = "anthropic";
-          model = "claude-3-opus-latest";
+          model = "claude-opus-4-latest";
         };
       };
 
@@ -67,12 +67,6 @@
       };
 
       lsp = {
-        nix = {
-          binary = {
-            path_lookup = true;
-          };
-        };
-
         hls = {
           binary = {
             path = "haskell-language-server-wrapper";
