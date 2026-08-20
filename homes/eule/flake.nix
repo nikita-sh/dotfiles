@@ -40,6 +40,7 @@
           claude-code.overlays.default
         ];
       };
+      conduit = pkgs.callPackage ./conduit.nix { };
     in
     {
       homeConfigurations."${username}@${hostname}" = home-manager.lib.homeManagerConfiguration {
@@ -62,6 +63,7 @@
 
             my = {
               email = "nikita@mercury.com";
+              extraPackages = [ conduit ];
               p10k = ./dot-p10k.zsh;
             };
 
@@ -78,8 +80,10 @@
               reasoningEffort = "high";
             };
 
-            my.agents.harnesses.opencode.enable = true;
-
+            my.agents.harnesses.opencode = {
+              enable = true;
+              theme = "system";
+            };
           }
           # neru.homeManagerModules.default
           # {
