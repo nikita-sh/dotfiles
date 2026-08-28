@@ -76,8 +76,9 @@
 
             my.agents.harnesses.codex = {
               enable = true;
-              model = "gpt-5.6-terra";
-              reasoningEffort = "high";
+              model = "gpt-5.6-sol";
+              reasoningEffort = "medium";
+              settings.model_context_window = 1050000;
             };
 
             my.agents.harnesses.opencode = {
