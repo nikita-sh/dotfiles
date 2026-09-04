@@ -17,6 +17,7 @@
         bitwise # cli tool for bit / hex manipulation
         file # Show file information
         fzf # fuzzy finder
+        glow
         lazygit
         nix-prefetch-github
         ripgrep # grep replacement
