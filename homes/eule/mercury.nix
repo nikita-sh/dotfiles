@@ -1,11 +1,16 @@
 # Mercury work-machine glue: bootstrap-mercury, fnm, Homebrew PATH.
 {
+  config,
   pkgs,
   inputs,
   system,
   ...
 }:
 {
+  home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];
+
+  my.sessionVariables.NODE_EXTRA_CA_CERTS = "${config.home.homeDirectory}/.pi/agent/mercury-root-cas.pem";
+
   home.packages = [
     pkgs.fnm
     inputs.bootstrap-mercury.packages.${system}.default # bin/bootstrap-mercury
