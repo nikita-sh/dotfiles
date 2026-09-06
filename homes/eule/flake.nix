@@ -9,7 +9,6 @@
     # neru.url = "github:y3owk1n/neru";
     shared.url = "path:../../shared";
     claude-code.url = "github:sadjow/claude-code-nix";
-    omp.url = "github:can1357/oh-my-pi";
     # Deliberately no nixpkgs.follows: its pkgsStatic/crane build is tested
     # against its own locked inputs, and matching them is what makes garnix
     # cache hits possible.
@@ -25,7 +24,6 @@
       # neru,
       shared,
       claude-code,
-      omp,
       ...
     }:
     let
@@ -114,7 +112,7 @@
           # }
           ./mercury.nix
           (shared.homeManagerModules.agents)
-          omp.homeManagerModules.default
+          (shared.homeManagerModules.omp)
           (shared.homeManagerModules.bat)
           (shared.homeManagerModules.btop)
           (shared.homeManagerModules.direnv)

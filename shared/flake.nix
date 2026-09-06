@@ -16,6 +16,7 @@
       url = "github:obra/superpowers";
       flake = false;
     };
+    omp.url = "github:can1357/oh-my-pi";
   };
 
   outputs =
@@ -36,6 +37,7 @@
 
       homeManagerModules = transformModulePaths [
         ./agents
+        ./omp
         ./bat
         ./btop
         ./cliamp
