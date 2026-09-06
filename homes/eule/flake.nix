@@ -79,12 +79,19 @@
               model = "gpt-5.6-sol";
               reasoningEffort = "medium";
               settings.model_context_window = 1050000;
+              settings.features.context_management.experimental_mode = true;
             };
 
             my.agents.harnesses.opencode = {
               enable = true;
               theme = "system";
             };
+
+            my.agents.harnesses.omp = {
+              enable = true;
+              settings.startup.quiet = true;
+            };
+
           }
           # neru.homeManagerModules.default
           # {

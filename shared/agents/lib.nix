@@ -71,12 +71,13 @@
   # and renames it, which fails inside the store. Precedence is
   # defaults < whatever the agent wrote < nix-managed keys. jq `*` merges
   # objects and replaces arrays, so a managed array replaces wholesale.
-  # `format = "toml"` merges through JSON and converts back; comments and key
-  # order in the existing file are not preserved.
+  # TOML and YAML merge through JSON; comments and key order in the existing
+  # file are not preserved.
   mkMutableSettings =
     {
       path,
       format ? "json",
+      fallbackPaths ? [ ],
       defaults ? { },
       managed ? { },
     }:
@@ -85,11 +86,29 @@
       defaultsJson = jsonFmt.generate "agents-defaults.json" defaults;
       managedJson = jsonFmt.generate "agents-managed.json" managed;
       remarshal = lib.getExe pkgs.remarshal;
-      toJson = if format == "toml" then "${remarshal} --if toml --of json" else "cat";
-      fromJson = if format == "toml" then "${remarshal} --if json --of toml" else "cat";
+      toJson =
+        if format == "toml" then
+          "${remarshal} --if toml --of json"
+        else if format == "yaml" then
+          "${remarshal} --if yaml --of json"
+        else
+          "cat";
+      fromJson =
+        if format == "toml" then
+          "${remarshal} --if json --of toml"
+        else if format == "yaml" then
+          "${remarshal} --if json --of yaml"
+        else
+          "cat";
+      selectFallback = lib.concatMapStringsSep "\n" (fallbackPath: ''
+        if [ ! -e "$target" ] && [ ! -L "$target" ] && [ -e "$HOME/${fallbackPath}" ]; then
+          target="$HOME/${fallbackPath}"
+        fi
+      '') fallbackPaths;
     in
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       target="$HOME/${path}"
+      ${selectFallback}
       run mkdir -p "$(dirname "$target")"
       # Older generations may have left a store symlink here.
       if [ -L "$target" ]; then run rm -f "$target"; fi
